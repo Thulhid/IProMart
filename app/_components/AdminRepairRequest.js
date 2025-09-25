@@ -1,9 +1,11 @@
 import Button from "@/app/_components/Button";
+import ConfirmDelete from "@/app/_components/ConfirmDelete";
+import Modal from "@/app/_components/Modal";
 import { format } from "date-fns";
 import Image from "next/image";
 import Link from "next/link";
 
-function AdminRepairRequest({ request }) {
+function AdminRepairRequest({ request, onDeleteRequestById }) {
   const {
     _id: id,
     brand,
@@ -57,14 +59,25 @@ function AdminRepairRequest({ request }) {
       </div>
 
       {/* actions (kept minimal, no extra props) */}
-      <div className="mt-2">
+      <div className="mt-2 ml-auto flex w-fit justify-end gap-2">
         <Button
           link={`/admin/repair-requests/${id}`}
           variant="primary"
-          configStyles="w-fit ml-auto"
+          configStyles=""
         >
           View request
         </Button>
+        <Modal>
+          <Modal.Open opens={"delete-request"}>
+            <Button variant={"danger"}>Delete</Button>
+          </Modal.Open>
+          <Modal.Window name={"delete-request"}>
+            <ConfirmDelete
+              resource={"repair request"}
+              onConfirm={() => onDeleteRequestById(id)}
+            />
+          </Modal.Window>
+        </Modal>
       </div>
     </div>
   );

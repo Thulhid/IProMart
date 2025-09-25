@@ -209,3 +209,20 @@ export async function deleteRepairJobById(id) {
     );
   }
 }
+
+export async function deleteRepairRequestById(id) {
+  try {
+    const response = await axios.delete(
+      `${API_BASE_URL}/api/v1/repair-requests/id/${id}`,
+      {
+        withCredentials: true,
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error delete repair job:", error);
+    throw new Error(
+      error.response?.data?.message || "Something went wrong. Please try again",
+    );
+  }
+}

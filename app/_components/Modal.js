@@ -33,14 +33,14 @@ function Window({ children, name }) {
         ref={ref}
         className="xl:px-10px fixed top-1/2 left-1/2 w-85 -translate-x-1/2 -translate-y-1/2 transform rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-5 transition-all duration-300 sm:w-auto md:px-5"
       >
-        <Button onClick={close} className="cursor-pointer" variant="close">
+        <Button configStyles={"ml-auto w-fit"} onClick={close} variant="close">
           <HiXMark size={20} strokeWidth={1} />
         </Button>
 
         <div>{cloneElement(children, { onCloseModal: close })}</div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 }
 
