@@ -59,7 +59,7 @@ function AdminRepairRequest({ request, onDeleteRequestById }) {
       </div>
 
       {/* actions (kept minimal, no extra props) */}
-      <div className="mt-2 ml-auto flex w-fit justify-end gap-2">
+      <div className="mt-auto ml-auto flex w-fit justify-end gap-2">
         <Button
           link={`/admin/repair-requests/${id}`}
           variant="primary"
