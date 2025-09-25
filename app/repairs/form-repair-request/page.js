@@ -299,7 +299,7 @@ export default function FormRepairRequestPage() {
                   ))}
                 </div>
               )}
-              <p className="mt-1 text-xs text-zinc-500">
+              <p className="mt-1 text-xs text-zinc-400">
                 Max 5 photos, 10 MB each (JPG/PNG/WEBP).
               </p>
             </div>

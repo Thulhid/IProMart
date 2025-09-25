@@ -15,7 +15,7 @@ export default function PaymentSuccessPage() {
       <div className="mb-6 flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft
-            className="text-zinc-50/50 group-hover:text-red-600 group-active:text-red-600"
+            className="text-zinc-50/50 group-hover:text-zinc-200 group-active:text-zinc-200"
             size={28}
             strokeWidth={3}
           />
@@ -25,7 +25,7 @@ export default function PaymentSuccessPage() {
         </h1>
       </div>
       <ContainerBox>
-        <div className="flex max-w-4xl items-center justify-center rounded-2xl border border-zinc-700 bg-zinc-900 p-8 px-4 shadow-lg shadow-red-600/40">
+        <div className="flex max-w-4xl items-center justify-center rounded-2xl border border-zinc-700 bg-zinc-900 p-8 px-4 shadow-lg shadow-blue-600/40">
           <div className="space-y-4 text-center">
             <HiCheckCircle className="mx-auto text-blue-400" size={48} />
             <h1 className="text-2xl font-semibold text-zinc-100">
