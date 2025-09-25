@@ -1,0 +1,9 @@
+{
+  "javascript.preferences.importModuleSpecifier": "non-relative",
+  "cSpell.words": ["neurotech", "payhere"],
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#440478",
+    "titleBar.activeBackground": "#5F06A8",
+    "titleBar.activeForeground": "#FCFAFF"
+  }
+}

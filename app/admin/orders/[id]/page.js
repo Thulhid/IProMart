@@ -1,0 +1,204 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Image from "next/image";
+import toast from "react-hot-toast";
+import {
+  HiOutlineChevronLeft,
+  HiOutlineInformationCircle,
+} from "react-icons/hi2";
+import { format, parseISO } from "date-fns";
+
+import BackButton from "@/app/_components/BackButton";
+import ContainerBox from "@/app/_components/ContainerBox";
+import Spinner from "@/app/_components/Spinner";
+import Tag from "@/app/_components/Tag";
+import { getOrder } from "@/app/_lib/order-service";
+import { formatCurrency } from "@/app/_utils/helper";
+import Empty from "@/app/_components/Empty";
+import { FaMoneyBillWave } from "react-icons/fa6";
+import { getSetting } from "@/app/_lib/setting-service";
+
+export default function AdminOrderDetailPage() {
+  const { id } = useParams();
+  const [order, setOrder] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [shippingFee, setShippingFee] = useState(null);
+
+  useEffect(() => {
+    if (!id) return;
+    (async () => {
+      setIsLoading(true);
+      try {
+        const res = await getOrder(id);
+        setOrder(res.data.data);
+        const resShippingFee = await getSetting(
+          process.env.NEXT_PUBLIC_SETTING_ID
+        );
+        setShippingFee(resShippingFee.data.data.shippingFee);
+      } catch (err) {
+        toast.error("Failed to load order details");
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [id]);
+
+  return (
+    <div className="mx-4 md:mx-10 my-6 2xl:max-w-5xl 2xl:mx-auto">
+      <div className="flex items-center gap-4 mb-6">
+        <BackButton>
+          <HiOutlineChevronLeft
+            className="text-zinc-50/50 group-hover:text-red-600 group-active:text-red-600"
+            size={28}
+            strokeWidth={3}
+          />
+        </BackButton>
+        <h1 className="text-3xl text-zinc-300 font-semibold">Order Overview</h1>
+      </div>
+
+      {isLoading ? (
+        <Spinner />
+      ) : !order ? (
+        <Empty resourceName="order" />
+      ) : (
+        <ContainerBox>
+          <div className="bg-zinc-900 shadow-lg shadow-red-600/40 p-6 sm:p-8 rounded-2xl border border-zinc-700 space-y-6">
+            <div className="text-sm text-zinc-400 space-y-1">
+              <p>
+                <span className="text-zinc-200 font-medium">Order ID:</span>{" "}
+                {order.orderId}
+              </p>
+              <p>
+                <span className="text-zinc-200 font-medium">Placed on:</span>{" "}
+                {/* {format(new Date(order.createdAt), "yyyy-MM-dd hh:mm a")} */}
+                {format(parseISO(order.createdAt), "MMM dd yyyy hh:mm a")}
+              </p>
+            </div>
+
+            <div className="border-t border-zinc-700 pt-4">
+              <h2 className="text-zinc-200 text-lg font-semibold mb-4">
+                Products
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {order.orderItems.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-4 bg-zinc-800 rounded-xl p-3 border border-zinc-700"
+                  >
+                    <div className="relative w-16 h-16">
+                      <Image
+                        src={item.product.imageCover || "/placeholder.png"}
+                        alt={item.product.name}
+                        fill
+                        className="rounded-lg object-cover"
+                      />
+                    </div>
+                    <div className="text-zinc-200 space-y-0.5">
+                      <p className="font-medium leading-5">
+                        {item.product.name}
+                      </p>
+                      <p className="text-sm text-zinc-400">
+                        Qty: {item.quantity} ×{" "}
+                        {formatCurrency(item.priceAtPurchase)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="border-t border-zinc-700 pt-4 flex flex-col sm:flex-row sm:justify-between gap-6">
+              <div className=" text-zinc-300 space-y-2">
+                <p>
+                  <span className=" text-zinc-400">Customer ID: </span>{" "}
+                  {order.customer._id}
+                </p>
+                <p>
+                  <span className="text-zinc-400">Customer Name:</span>{" "}
+                  {order.customer.fullName}
+                </p>
+                <p>
+                  <span className="text-zinc-400">Email:</span>{" "}
+                  {order.customer.email}
+                </p>
+                <p>
+                  <span className="text-zinc-400">Contact Number:</span>{" "}
+                  {order.shippingAddress.mobileNumber}
+                </p>
+                <p>
+                  <span className="text-zinc-400">Shipping Address:</span>{" "}
+                  {order.shippingAddress.street}, {order.shippingAddress.city}
+                </p>
+                <p>
+                  <span className="text-zinc-400">Payment Method:</span>{" "}
+                  {order.paymentMethod}
+                </p>
+                <p className="flex items-center gap-2">
+                  <FaMoneyBillWave className="text-green-500" />
+                  <span>
+                    <span className="text-zinc-400">Payment:</span>{" "}
+                    <span
+                      className={`${
+                        order.paymentStatus === "Paid"
+                          ? "text-green-500"
+                          : order.paymentStatus === "Failed"
+                          ? "text-red-500"
+                          : "text-zinc-500"
+                      }`}
+                    >
+                      {order.paymentStatus}
+                    </span>
+                  </span>
+                </p>
+                <Tag status={order.orderStatus} />
+              </div>
+
+              <div className="text-zinc-100 font-semibold text-base self-end">
+                <p>Total: {formatCurrency(order.totalAmount)}</p>
+                {order.shippingFee !== 0 && (
+                  <p className="text-sm text-zinc-400 font-normal">
+                    Paid Shipping Fee: {formatCurrency(order.shippingFee)}
+                  </p>
+                )}
+              </div>
+            </div>
+            {order.shippingFee === 0 && (
+              <span className="flex items-start gap-2 text-yellow-400 text-sm">
+                <HiOutlineInformationCircle size={18} />
+                Shipping fee (Rs.{shippingFee}) will be collected when order is
+                delivered
+              </span>
+            )}
+
+            <div className="border-t border-zinc-700 pt-4">
+              <h2 className="text-lg font-semibold text-zinc-200 mb-2">
+                Order Status History
+              </h2>
+              <div className="space-y-2">
+                {order.orderStatusHistory.map((status) => (
+                  <div
+                    key={status._id}
+                    className="flex items-center justify-between border border-zinc-700 rounded-md px-4 py-2 bg-zinc-800"
+                  >
+                    <span className="text-zinc-300 font-medium">
+                      {status.status}
+                    </span>
+                    <span className="text-sm text-zinc-400">
+                      {/* {format(parseISO(status.changedAt), "yyyy-MM-dd hh:mm a")} */}
+                      {format(
+                        parseISO(status.changedAt),
+                        "MMM dd yyyy hh:mm a"
+                      )}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </ContainerBox>
+      )}
+    </div>
+  );
+}

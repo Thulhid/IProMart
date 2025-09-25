@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer components {
+  .input {
+    @apply rounded-md border border-zinc-500 px-4 py-2 text-zinc-100 transition-colors duration-500 focus:ring focus:ring-blue-500 focus:outline-none;
+  }
+}
+
+@theme {
+  --font-sans: "Poppins", "sans-serif";
+}
+.leaflet-popup-content-wrapper.custom-popup,
+.custom-popup .leaflet-popup-content-wrapper {
+  background-color: #52525c;
+  color: #ffffff;
+  border-radius: 8px;
+  padding: 8px 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  font-family: "Poppins", sans-serif;
+  font-size: 11px;
+  transition: all 0.3s ease;
+}
+
+.custom-popup .leaflet-popup-tip {
+  background: #71717b;
+}
+
+.custom-popup .leaflet-popup-content {
+  margin: 0;
+}
+
+.leaflet-popup.custom-popup .leaflet-popup-close-button {
+  color: #ffffffc3;
+  font-size: 11px;
+}
+
+:root {
+  --toast-icon-success-primary: oklch(62.3% 0.214 259.815);
+  --toast-icon-success-secondary: oklch(97.1% 0.013 17.38);
+  --toast-icon-error-primary: oklch(97.1% 0.013 17.38);
+  --toast-icon-error-secondary: oklch(57.7% 0.245 27.325);
+}
