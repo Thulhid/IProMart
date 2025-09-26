@@ -229,7 +229,7 @@ function FormRepairJobPage() {
             </div>
             {/* Shipping fee toggle */}
             <div className="mt-2">
-              <label className="inline-flex items-center gap-2 text-sm text-zinc-400">
+              <label className="mt-5 inline-flex items-center gap-2 text-sm text-zinc-400">
                 <input
                   type="checkbox"
                   className="h-4 w-4 accent-blue-400"

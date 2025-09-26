@@ -53,8 +53,8 @@ function AdminRepairRequest({ request, onDeleteRequestById }) {
           </p>
         ) : null}
 
-        <p className="mt-1 text-xs text-zinc-500">
-          Updated: {format(new Date(updatedAt), "dd MMM yyyy h.mmaaa")}
+        <p className="mt-1 text-xs text-zinc-400">
+          Created: {format(new Date(updatedAt), "dd MMM yyyy h.mmaaa")}
         </p>
       </div>
 

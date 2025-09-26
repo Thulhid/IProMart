@@ -68,7 +68,7 @@ function BottomNavigationBar({ categories }) {
   return (
     <>
       {/* Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 flex justify-between bg-zinc-900 px-6 py-1.5 xl:hidden z-[1000]">
+      <div className="fixed right-0 bottom-0 left-0 z-[1000] flex justify-between bg-zinc-900 px-6 py-1.5 xl:hidden">
         {userRole === "admin" || userRole === "employee" ? (
           <AdminMenuButton userRole={userRole} />
         ) : (
@@ -103,7 +103,10 @@ function BottomNavigationBar({ categories }) {
           </Modal.Window>
         </Modal>
 
-        <Link href="/repairing" className="flex flex-col items-center">
+        <Link
+          href="/admin/repair-requests"
+          className="flex flex-col items-center"
+        >
           <CiMedicalCase size={30} className="text-zinc-300" />
           <span className="text-xs text-zinc-400">Repairing</span>
         </Link>
