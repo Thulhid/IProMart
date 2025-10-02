@@ -312,8 +312,11 @@ export const createRepairJobSchema = yup.object({
   note: yup.string().max(500, "Note is too long").optional(),
   amount: yup
     .number()
-    .typeError("Amount is required")
+    .typeError("Amount must be a number")
     .positive("Amount must be greater than 0")
-    .required("Amount is required"),
+    .nullable()
+    .transform((value, originalValue) =>
+      String(originalValue).trim() === "" ? null : value,
+    ),
   shippingIncluded: yup.boolean().required("Missing shipping fee check box"),
 });

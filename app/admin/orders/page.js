@@ -72,13 +72,12 @@ function Page() {
     setSearchId(searchInput.trim());
   }
 
-  console.log(orders);
   return (
     <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-5xl">
       <div className="mb-6 flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft
-            className="text-zinc-50/50 group-hover:text-red-600 group-active:text-red-600"
+            className="text-zinc-50/50 group-hover:text-zinc-200 group-active:text-zinc-200"
             size={28}
             strokeWidth={3}
           />

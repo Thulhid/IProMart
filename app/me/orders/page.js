@@ -82,14 +82,12 @@ export default function MyOrdersPage() {
                   {order.orderItems.map((item, idx) => (
                     <div key={idx} className="flex items-center gap-4">
                       <img
-                        src={item.product.imageCover}
-                        alt={item.product.name}
+                        src={item.img}
+                        alt={item.name}
                         className="h-14 w-14 rounded-lg border border-zinc-600 object-cover"
                       />
                       <div className="space-y-0.5 text-zinc-200">
-                        <p className="leading-5 font-medium">
-                          {item.product.name}
-                        </p>
+                        <p className="leading-5 font-medium">{item.name}</p>
                         <p className="text-sm text-zinc-400">
                           Qty: {item.quantity} ×{" "}
                           {formatCurrency(item.priceAtPurchase)}

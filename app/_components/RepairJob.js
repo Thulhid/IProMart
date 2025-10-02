@@ -51,7 +51,7 @@ export default function RepairJob({ job }) {
       <div className="flex items-center gap-3 text-zinc-300">
         <span className="w-28 text-zinc-400">Amount</span>
         <span className="font-semibold text-zinc-100">
-          {formatCurrency(job.amount)}
+          {job.amount ? formatCurrency(job.amount) : "N/A"}
         </span>
       </div>
       <div className="flex items-center gap-3 text-zinc-300">

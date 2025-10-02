@@ -2,11 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { formatCurrency } from "@/app/_utils/helper";
 
-function Product({ product }) {
+function Product({ product, isHoverScale = true, isPreBuilt = false }) {
   const hasDiscount = Boolean(product.priceDiscount);
 
   return (
-    <div className="flex w-full max-w-xs flex-col rounded-lg border border-zinc-500 bg-zinc-800 shadow-lg transition-all hover:scale-105 hover:shadow-xs hover:shadow-zinc-400 sm:max-w-sm md:max-w-md lg:max-w-xs">
+    <div
+      className={`flex w-full max-w-xs flex-col rounded-lg border border-zinc-500 bg-zinc-800 shadow-lg transition-all ${isHoverScale ? "hover:scale-105" : ""} hover:shadow-xs hover:shadow-zinc-400 sm:max-w-sm md:max-w-md lg:max-w-xs`}
+    >
       {/* Card Body */}
       <div className="flex flex-1 flex-col justify-between px-4 pb-3 md:pb-5">
         <Link href={`/products/${product.slug}`} key={product._id}>
@@ -21,9 +23,11 @@ function Product({ product }) {
           <h5 className="mt-2 line-clamp-2 text-xs font-semibold tracking-tight text-zinc-100 sm:text-sm md:text-base">
             {product.name}
           </h5>
-          <p className="text-sm text-zinc-300">
-            {product.isUsed ? "Used" : "Brand New"}
-          </p>
+          {!isPreBuilt && (
+            <p className="text-sm text-zinc-300">
+              {product.isUsed ? "Used" : "Brand New"}
+            </p>
+          )}
 
           {/* Prices */}
           <div className="mt-1 min-h-[3.2rem] text-xs text-zinc-400 sm:mt-2 md:min-h-[3rem] md:text-sm">

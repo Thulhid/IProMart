@@ -62,7 +62,7 @@ export default function RootLayout({ children }) {
           }}
         />
         <CustomerProvider>
-          <main className="pb-10 md:pb-0">
+          <main className="min-w-xl pb-10 sm:min-w-auto md:pb-0">
             {/* bottom padding = height of bottom nav */}
             {children}
             <Footer />

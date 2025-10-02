@@ -72,17 +72,17 @@ export default function EditProfilePage() {
   };
 
   return (
-    <div className="mx-4 md:mx-10 my-6 2xl:max-w-4xl 2xl:mx-auto">
+    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-4xl">
       {/* Back button and title */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="mb-6 flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft
-            className="text-zinc-50/50 group-hover:text-red-600 group-active:text-red-600"
+            className="text-zinc-50/50 group-hover:text-zinc-200 group-active:text-zinc-200"
             size={28}
             strokeWidth={3}
           />
         </BackButton>
-        <h1 className="text-3xl text-zinc-300 font-semibold">Edit Profile</h1>
+        <h1 className="text-3xl font-semibold text-zinc-300">Edit Profile</h1>
       </div>
 
       {/* Form */}
@@ -92,12 +92,12 @@ export default function EditProfilePage() {
         <ContainerBox>
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="w-full max-w-5xl bg-zinc-900 shadow-lg shadow-red-600/40 p-8 rounded-2xl border border-zinc-700"
+            className="w-full max-w-5xl rounded-2xl border border-zinc-700 bg-zinc-900 p-8 shadow-lg shadow-blue-600/40"
           >
             {/* Avatar */}
-            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
-              <div className="flex flex-col gap-4 items-center">
-                <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-zinc-700 shrink-0">
+            <div className="flex flex-col items-center gap-8 sm:flex-row sm:items-start">
+              <div className="flex flex-col items-center gap-4">
+                <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-zinc-700 sm:h-40 sm:w-40">
                   <Image
                     src={previewUrl || photo || "/default-user.png"}
                     alt={employee.fullName}
@@ -106,7 +106,7 @@ export default function EditProfilePage() {
                     priority
                   />
                 </div>
-                <label className="cursor-pointer rounded-md text-xs transition-colors duration-300 disabled:cursor-not-allowed disabled:border-none bg-red-600 text-red-50 px-3 py-1">
+                <label className="cursor-pointer rounded-md bg-blue-600 px-3 py-1 text-xs text-red-50 transition-colors duration-300 disabled:cursor-not-allowed disabled:border-none">
                   Change Photo
                   <input
                     type="file"
@@ -123,17 +123,17 @@ export default function EditProfilePage() {
                 </label>
               </div>
 
-              <div className="w-full grid sm:grid-cols-2 gap-6">
+              <div className="grid w-full gap-6 sm:grid-cols-2">
                 {/* Full Name */}
                 <div>
-                  <label className="text-zinc-400 block mb-1">Full Name</label>
+                  <label className="mb-1 block text-zinc-400">Full Name</label>
                   <input
                     type="text"
                     {...register("fullName")}
-                    className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                    className="input w-full"
                   />
                   {errors.fullName && (
-                    <p className="text-sm text-red-500 mt-1">
+                    <p className="mt-1 text-sm text-red-500">
                       {errors.fullName.message}
                     </p>
                   )}
@@ -141,12 +141,12 @@ export default function EditProfilePage() {
 
                 {/* Email (readonly) */}
                 <div>
-                  <label className="text-zinc-400 block mb-1">Email</label>
+                  <label className="mb-1 block text-zinc-400">Email</label>
                   <input
                     type="email"
                     disabled
                     {...register("email")}
-                    className="w-full px-4 py-2 bg-zinc-700 border border-zinc-700 text-zinc-400 rounded-md cursor-not-allowed"
+                    className="w-full cursor-not-allowed rounded-md border border-zinc-700 bg-zinc-700 px-4 py-2 text-zinc-400"
                   />
                 </div>
 
@@ -155,7 +155,7 @@ export default function EditProfilePage() {
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-end gap-4 mt-5">
+            <div className="mt-5 flex justify-end gap-4">
               <Button
                 buttonType="button"
                 variant="secondary"

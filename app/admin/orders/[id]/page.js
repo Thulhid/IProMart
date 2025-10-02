@@ -34,7 +34,7 @@ export default function AdminOrderDetailPage() {
         const res = await getOrder(id);
         setOrder(res.data.data);
         const resShippingFee = await getSetting(
-          process.env.NEXT_PUBLIC_SETTING_ID
+          process.env.NEXT_PUBLIC_SETTING_ID,
         );
         setShippingFee(resShippingFee.data.data.shippingFee);
       } catch (err) {
@@ -46,16 +46,16 @@ export default function AdminOrderDetailPage() {
   }, [id]);
 
   return (
-    <div className="mx-4 md:mx-10 my-6 2xl:max-w-5xl 2xl:mx-auto">
-      <div className="flex items-center gap-4 mb-6">
+    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-5xl">
+      <div className="mb-6 flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft
-            className="text-zinc-50/50 group-hover:text-red-600 group-active:text-red-600"
+            className="text-zinc-50/50 group-hover:text-zinc-200 group-active:text-zinc-200"
             size={28}
             strokeWidth={3}
           />
         </BackButton>
-        <h1 className="text-3xl text-zinc-300 font-semibold">Order Overview</h1>
+        <h1 className="text-3xl font-semibold text-zinc-300">Order Overview</h1>
       </div>
 
       {isLoading ? (
@@ -64,41 +64,39 @@ export default function AdminOrderDetailPage() {
         <Empty resourceName="order" />
       ) : (
         <ContainerBox>
-          <div className="bg-zinc-900 shadow-lg shadow-red-600/40 p-6 sm:p-8 rounded-2xl border border-zinc-700 space-y-6">
-            <div className="text-sm text-zinc-400 space-y-1">
+          <div className="space-y-6 rounded-2xl border border-zinc-700 bg-zinc-900 p-6 shadow-lg shadow-blue-600/40 sm:p-8">
+            <div className="space-y-1 text-sm text-zinc-400">
               <p>
-                <span className="text-zinc-200 font-medium">Order ID:</span>{" "}
+                <span className="font-medium text-zinc-200">Order ID:</span>{" "}
                 {order.orderId}
               </p>
               <p>
-                <span className="text-zinc-200 font-medium">Placed on:</span>{" "}
+                <span className="font-medium text-zinc-200">Placed on:</span>{" "}
                 {/* {format(new Date(order.createdAt), "yyyy-MM-dd hh:mm a")} */}
                 {format(parseISO(order.createdAt), "MMM dd yyyy hh:mm a")}
               </p>
             </div>
 
             <div className="border-t border-zinc-700 pt-4">
-              <h2 className="text-zinc-200 text-lg font-semibold mb-4">
+              <h2 className="mb-4 text-lg font-semibold text-zinc-200">
                 Products
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {order.orderItems.map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center gap-4 bg-zinc-800 rounded-xl p-3 border border-zinc-700"
+                    className="flex items-center gap-4 rounded-xl border border-zinc-700 bg-zinc-800 p-3"
                   >
-                    <div className="relative w-16 h-16">
+                    <div className="relative h-16 w-16">
                       <Image
-                        src={item.product.imageCover || "/placeholder.png"}
-                        alt={item.product.name}
+                        src={item.img || "/placeholder.png"}
+                        alt={item.name}
                         fill
                         className="rounded-lg object-cover"
                       />
                     </div>
-                    <div className="text-zinc-200 space-y-0.5">
-                      <p className="font-medium leading-5">
-                        {item.product.name}
-                      </p>
+                    <div className="space-y-0.5 text-zinc-200">
+                      <p className="leading-5 font-medium">{item.name}</p>
                       <p className="text-sm text-zinc-400">
                         Qty: {item.quantity} ×{" "}
                         {formatCurrency(item.priceAtPurchase)}
@@ -109,10 +107,10 @@ export default function AdminOrderDetailPage() {
               </div>
             </div>
 
-            <div className="border-t border-zinc-700 pt-4 flex flex-col sm:flex-row sm:justify-between gap-6">
-              <div className=" text-zinc-300 space-y-2">
+            <div className="flex flex-col gap-6 border-t border-zinc-700 pt-4 sm:flex-row sm:justify-between">
+              <div className="space-y-2 text-zinc-300">
                 <p>
-                  <span className=" text-zinc-400">Customer ID: </span>{" "}
+                  <span className="text-zinc-400">Customer ID: </span>{" "}
                   {order.customer._id}
                 </p>
                 <p>
@@ -144,8 +142,8 @@ export default function AdminOrderDetailPage() {
                         order.paymentStatus === "Paid"
                           ? "text-green-500"
                           : order.paymentStatus === "Failed"
-                          ? "text-red-500"
-                          : "text-zinc-500"
+                            ? "text-red-500"
+                            : "text-zinc-500"
                       }`}
                     >
                       {order.paymentStatus}
@@ -155,17 +153,17 @@ export default function AdminOrderDetailPage() {
                 <Tag status={order.orderStatus} />
               </div>
 
-              <div className="text-zinc-100 font-semibold text-base self-end">
+              <div className="self-end text-base font-semibold text-zinc-100">
                 <p>Total: {formatCurrency(order.totalAmount)}</p>
                 {order.shippingFee !== 0 && (
-                  <p className="text-sm text-zinc-400 font-normal">
+                  <p className="text-sm font-normal text-zinc-400">
                     Paid Shipping Fee: {formatCurrency(order.shippingFee)}
                   </p>
                 )}
               </div>
             </div>
             {order.shippingFee === 0 && (
-              <span className="flex items-start gap-2 text-yellow-400 text-sm">
+              <span className="flex items-start gap-2 text-sm text-yellow-400">
                 <HiOutlineInformationCircle size={18} />
                 Shipping fee (Rs.{shippingFee}) will be collected when order is
                 delivered
@@ -173,23 +171,23 @@ export default function AdminOrderDetailPage() {
             )}
 
             <div className="border-t border-zinc-700 pt-4">
-              <h2 className="text-lg font-semibold text-zinc-200 mb-2">
+              <h2 className="mb-2 text-lg font-semibold text-zinc-200">
                 Order Status History
               </h2>
               <div className="space-y-2">
                 {order.orderStatusHistory.map((status) => (
                   <div
                     key={status._id}
-                    className="flex items-center justify-between border border-zinc-700 rounded-md px-4 py-2 bg-zinc-800"
+                    className="flex items-center justify-between rounded-md border border-zinc-700 bg-zinc-800 px-4 py-2"
                   >
-                    <span className="text-zinc-300 font-medium">
+                    <span className="font-medium text-zinc-300">
                       {status.status}
                     </span>
                     <span className="text-sm text-zinc-400">
                       {/* {format(parseISO(status.changedAt), "yyyy-MM-dd hh:mm a")} */}
                       {format(
                         parseISO(status.changedAt),
-                        "MMM dd yyyy hh:mm a"
+                        "MMM dd yyyy hh:mm a",
                       )}
                     </span>
                   </div>

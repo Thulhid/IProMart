@@ -15,7 +15,7 @@ function Button({
   const styles = {
     primary:
       base +
-      " bg-blue-500 text-blue-50 hover:brightness-105 font-semibold  p-1.5 disabled:bg-zinc-700",
+      " bg-blue-700 text-blue-50 hover:brightness-105 font-semibold  p-1.5 disabled:bg-zinc-700",
     secondary:
       base +
       " border text-gray-300 font-semibold py-1 px-1.5 sm:p-1.5 active:bg-gray-200",
@@ -53,7 +53,7 @@ function Button({
       " relative inline-flex h-12 overflow-hidden rounded-xl p-[2px] focus:outline-none group",
     cart:
       base +
-      " border-2 border-zinc-200 rounded-xl px-5 text-base text-zinc-200 !text-base font-semibold hover:bg-zinc-200 hover:text-blue-600 active:text-blue-600 active:bg-zinc-200",
+      " border-2 border-zinc-200 rounded-xl px-5 text-base text-zinc-200 !text-base font-semibold hover:bg-zinc-200 hover:text-blue-700 active:text-blue-600 active:bg-zinc-200",
     updateQuantity:
       base +
       " p-1.5 cursor-pointer group focus:outline-none !rounded-full bg-zinc-400/20",
@@ -69,7 +69,7 @@ function Button({
       base +
       " hover:text-blue-400 transition-colors duration-200 w-full !rounded-none active:text-blue-400 xl:text-base",
 
-    edit: base + " text-zinc-50/50 hover:text-blue-400 cursor-pointer",
+    edit: base + " text-zinc-50/50 hover:text-blue-600 cursor-pointer",
   };
 
   //border border-red-600
@@ -89,7 +89,7 @@ function Button({
                 className={`inline-flex h-full w-full cursor-pointer items-center justify-center rounded-xl bg-zinc-950 px-5 py-1 text-base font-semibold text-zinc-50 backdrop-blur-3xl transition-colors duration-300 group-hover:bg-blue-400 group-active:bg-blue-600 hover:text-blue-50 ${
                   disabled || selected === children
                     ? ""
-                    : "group-hover:bg-blue-600 group-active:bg-blue-600"
+                    : "group-hover:bg-blue-700 group-active:bg-blue-700"
                 }`}
               >
                 {children}

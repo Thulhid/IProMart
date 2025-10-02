@@ -230,7 +230,7 @@ export default function FormRepairRequestPage() {
 
             <div>
               <label className="block text-sm text-zinc-300">
-                Problem Description
+                Issue Description
               </label>
               <textarea
                 rows={4}

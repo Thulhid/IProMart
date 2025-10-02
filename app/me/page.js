@@ -65,7 +65,7 @@ export default function Page() {
         >
           <GiBrokenBone
             size={25}
-            className="text-zinc-300 group-hover:text-blue-400"
+            className="text-zinc-300 group-hover:text-blue-700"
           />
           Logout
         </Button>
@@ -94,15 +94,15 @@ export default function Page() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex items-center gap-3">
-                <MdEmail className="text-blue-500" size={22} />
+                <MdEmail className="text-blue-700" size={22} />
                 <span>{customer.email}</span>
               </div>
               <div className="flex items-center gap-3">
-                <MdPhone className="text-blue-500" size={22} />
+                <MdPhone className="text-blue-700" size={22} />
                 <span>{defaultShippingAddress?.mobileNumber}</span>
               </div>
               <div className="flex items-center gap-3 sm:col-span-2">
-                <MdLocationOn className="text-blue-500" size={22} />
+                <MdLocationOn className="text-blue-700" size={22} />
                 <span>
                   {defaultShippingAddress?.street},{" "}
                   {defaultShippingAddress?.city}

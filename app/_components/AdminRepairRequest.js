@@ -73,7 +73,7 @@ function AdminRepairRequest({ request, onDeleteRequestById }) {
           </Modal.Open>
           <Modal.Window name={"delete-request"}>
             <ConfirmDelete
-              resource={"repair request"}
+              resource={"repair request and related JOB"}
               onConfirm={() => onDeleteRequestById(id)}
             />
           </Modal.Window>

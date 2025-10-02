@@ -20,17 +20,16 @@ import toast from "react-hot-toast";
 import AdminMenuButton from "@/app/_components/AdminMenuButton";
 import Modal from "@/app/_components/Modal";
 import MobileSignupLogin from "@/app/_components/MobileSignUpLogin";
+import { PiDesktopTowerThin } from "react-icons/pi";
 
 function BottomNavigationBar({ categories }) {
   const router = useRouter();
   const { open, setOpen, setSelected } = useCategories();
-  // const { ref } = useOutsideClick(() => setOpen(false));
 
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [isGuest, setIsGuest] = useState(false);
   const [userRole, setUserRole] = useState("");
   const [showAdminMenu, setShowAdminMenu] = useState(false);
-  // const { ref: adminRef } = useOutsideClick(() => setShowAdminMenu(false));
 
   useEffect(() => {
     async function getUser() {
@@ -103,6 +102,11 @@ function BottomNavigationBar({ categories }) {
           </Modal.Window>
         </Modal>
 
+        <Link href="/pc-build" className="flex flex-col items-center">
+          <PiDesktopTowerThin size={30} className="text-zinc-300" />
+          <span className="text-xs text-zinc-400">PC Build</span>
+        </Link>
+
         <Link
           href="/admin/repair-requests"
           className="flex flex-col items-center"
@@ -110,7 +114,6 @@ function BottomNavigationBar({ categories }) {
           <CiMedicalCase size={30} className="text-zinc-300" />
           <span className="text-xs text-zinc-400">Repairing</span>
         </Link>
-
         {isGuest && (
           <Modal>
             <Modal.Open opens="account-signup-login">
@@ -136,53 +139,4 @@ function BottomNavigationBar({ categories }) {
   );
 }
 
-//export default BottomNavigationBar;
-
-// function BottomNavigationBar({ children }) {
-//   const [isCategories, setIsCategories] = useState(false);
-
-//   return (
-//     <>
-//       {/* {isCategories && <Categories categories={categories} />} */}
-//       <div className="fixed bottom-0 left-0 right-0 flex justify-between bg-zinc-100 px-6 py-1.5 md:hidden z-1004">
-//         {children}
-//       </div>
-//     </>
-//   );
-// }
-
-// function Cart({ children, onClick }) {
-//   return (
-//     <Button configStyles="flex flex-col items-center" onClick={onClick}>
-//       {children}
-//     </Button>
-//   );
-// }
-
-// // function Categories({ children, onClick }) {
-// //   return (
-// //     <Button configStyles="flex flex-col items-center" onClick={onClick}>
-// //       {children}
-// //     </Button>
-// //   );
-// // }
-// function Repairing({ children, onClick }) {
-//   return (
-//     <Button configStyles="flex flex-col items-center" onClick={onClick}>
-//       {children}
-//     </Button>
-//   );
-// }
-// function Account({ children, onClick }) {
-//   return (
-//     <Button configStyles="flex flex-col items-center" onClick={onClick}>
-//       {children}
-//     </Button>
-//   );
-// }
-
-// BottomNavigationBar.Cart = Cart;
-// //BottomNavigationBar.Categories = Categories;
-// BottomNavigationBar.Repairing = Repairing;
-// BottomNavigationBar.Account = Account;
 export default BottomNavigationBar;

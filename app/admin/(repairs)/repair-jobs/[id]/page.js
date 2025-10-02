@@ -27,7 +27,6 @@ function AdminRepairJobDetailsPage() {
       }
     })();
   }, [id]);
-  console.log(job);
   return (
     <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-5xl">
       {loading || job === null ? (
@@ -82,7 +81,7 @@ function AdminRepairJobDetailsPage() {
             <div className="mt-5">
               <div className="text-base">
                 <span className="text-zinc-400">Job Amount: </span>
-                <span>{formatCurrency(job.amount)}</span>
+                <span>{job.amount ? formatCurrency(job.amount) : "N/A"}</span>
               </div>
               {job.shippingFee > 0 && (
                 <div>
@@ -90,14 +89,16 @@ function AdminRepairJobDetailsPage() {
                   <span>{formatCurrency(job.shippingFee)}</span>
                 </div>
               )}
-              <div className="text-xl font-semibold">
-                <span>Total Amount: </span>
-                <span>
-                  {job.shippingFee > 0
-                    ? formatCurrency(job.amount + job.shippingFee)
-                    : job.amount}
-                </span>
-              </div>
+              {!!job.amount && (
+                <div className="text-xl font-semibold">
+                  <span>Total Amount: </span>
+                  <span>
+                    {job.shippingFee > 0
+                      ? formatCurrency(job.amount + job.shippingFee)
+                      : job.amount}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </RepairJobDetails>

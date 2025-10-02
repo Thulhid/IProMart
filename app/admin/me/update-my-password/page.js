@@ -34,7 +34,7 @@ export default function UpdatePasswordPage() {
       const res = await updateEmployeePassword(
         passwordCurrent,
         password,
-        passwordConfirm
+        passwordConfirm,
       );
       toast.success(res.message, { id: toastId });
       reset();
@@ -46,16 +46,16 @@ export default function UpdatePasswordPage() {
   };
 
   return (
-    <div className="mx-4 md:mx-10 my-6 2xl:max-w-2xl 2xl:mx-auto">
+    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-2xl">
       <div className="flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft
-            className="text-zinc-50/50 group-hover:text-red-600 group-active:text-red-600"
+            className="text-zinc-50/50 group-hover:text-zinc-200 group-active:text-zinc-200"
             size={28}
             strokeWidth={3}
           />
         </BackButton>
-        <h1 className="text-3xl text-zinc-300 font-semibold">
+        <h1 className="text-3xl font-semibold text-zinc-300">
           Update Password
         </h1>
       </div>
@@ -66,11 +66,11 @@ export default function UpdatePasswordPage() {
         <ContainerBox>
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="w-full max-w-2xl bg-zinc-900 shadow-lg shadow-red-600/40 p-8 rounded-2xl border border-zinc-700 md:px-20"
+            className="w-full max-w-2xl rounded-2xl border border-zinc-700 bg-zinc-900 p-8 shadow-lg shadow-blue-600/40 md:px-20"
           >
             <div className="grid gap-6">
               <div>
-                <label className="text-zinc-400 block mb-1">
+                <label className="mb-1 block text-zinc-400">
                   Current Password
                 </label>
                 <input
@@ -78,33 +78,33 @@ export default function UpdatePasswordPage() {
                   {...register("passwordCurrent", {
                     required: "This field is required",
                   })}
-                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="input w-full"
                 />
                 {errors.passwordCurrent && (
-                  <p className="text-sm text-red-500 mt-1">
+                  <p className="mt-1 text-sm text-red-500">
                     {errors.passwordCurrent.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="text-zinc-400 block mb-1">New Password</label>
+                <label className="mb-1 block text-zinc-400">New Password</label>
                 <input
                   type="password"
                   {...register("password", {
                     required: "This field is required",
                   })}
-                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="input w-full"
                 />
                 {errors.password && (
-                  <p className="text-sm text-red-500 mt-1">
+                  <p className="mt-1 text-sm text-red-500">
                     {errors.password.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="text-zinc-400 block mb-1">
+                <label className="mb-1 block text-zinc-400">
                   Confirm New Password
                 </label>
                 <input
@@ -114,17 +114,17 @@ export default function UpdatePasswordPage() {
                     validate: (value, { newPassword }) =>
                       value === newPassword || "Passwords do not match",
                   })}
-                  className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="input w-full"
                 />
                 {errors.passwordConfirm && (
-                  <p className="text-sm text-red-500 mt-1">
+                  <p className="mt-1 text-sm text-red-500">
                     {errors.passwordConfirm.message}
                   </p>
                 )}
               </div>
             </div>
 
-            <div className="flex justify-end gap-4 mt-5">
+            <div className="mt-5 flex justify-end gap-4">
               <Button
                 buttonType="button"
                 variant="secondary"

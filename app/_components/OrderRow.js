@@ -24,7 +24,6 @@ function OrderRow({ order, onDelete, onOrder }) {
     orderItems,
     customer: { fullName: customerName, email },
   } = order;
-  console.log(order);
   return (
     <Table.Row
       styles="grid gap-2 text-xs sm:text-sm md:text-base items-start border-t border-zinc-700 py-3 px-2
@@ -32,9 +31,9 @@ function OrderRow({ order, onDelete, onOrder }) {
     >
       {/* Product */}
       <div className="col-span-2 text-[11px] text-zinc-200 sm:col-span-1 sm:text-xs">
-        {orderItems.map((item) => (
-          <span key={item.product._id} className="block">
-            {item.product.name}
+        {orderItems.map((item, i) => (
+          <span key={i} className="block">
+            {item.name}
           </span>
         ))}
       </div>

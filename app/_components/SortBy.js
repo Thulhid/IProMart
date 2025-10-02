@@ -1,18 +1,3 @@
-// import Select from "@/app/_components/Select";
-// import { useSearchParams } from "next/navigation";
-
-// function SortBy({ options }) {
-//   const [searchParams, setSearchParams] = useSearchParams();
-
-//   const sortBy = searchParams.get("sortBy") || "";
-//   function handleChange(e) {
-//     searchParams.set("sortBy", e.target.value);
-//     setSearchParams(searchParams);
-//   }
-//   return <Select options={options} onChange={handleChange} value={sortBy} />;
-// }
-
-// export default SortBy;
 "use client";
 
 import Select from "@/app/_components/Select";

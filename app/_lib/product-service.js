@@ -17,37 +17,30 @@ export async function getProducts(page) {
   }
 }
 
-export async function filterProducts(name, category, page, isUsed, sort) {
+export async function filterProducts(
+  name,
+  category,
+  page,
+  subcategory,
+  isUsed,
+  sort,
+) {
   const params = new URLSearchParams();
 
   if (typeof isUsed === "boolean") params.set("isUsed", isUsed);
   if (sort) params.set("sort", sort);
   if (name) params.set("name", name);
   if (category) params.set("category", category);
+  if (subcategory) params.set("subcategory", subcategory);
   params.set("page", page);
   params.set("limit", PAGE_SIZE);
 
   const url = `${API_BASE_URL}/api/v1/products?${params.toString()}`;
-
   try {
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
     console.error("Error searching products:", error);
-    throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again",
-    );
-  }
-}
-
-export async function getCategories(model) {
-  try {
-    const response = await axios.get(
-      `${API_BASE_URL}/api/v1/${model}/categories`,
-    );
-    return response.data.data;
-  } catch (error) {
-    console.error("Error fetching product categories:", error);
     throw new Error(
       error.response?.data?.message || "Something went wrong. Please try again",
     );
@@ -81,7 +74,9 @@ export async function getProductById(id) {
     );
   }
 }
+
 export async function updateProductById(id, payload) {
+  console.log(payload);
   for (let [key, val] of payload.entries()) {
     console.log(`${key}:`, val);
   }

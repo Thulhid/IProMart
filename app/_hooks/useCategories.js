@@ -18,8 +18,9 @@ export function useCategories() {
 
     const params = new URLSearchParams(searchParams.toString());
     if (!selected) return;
-    if (selected === "All Categories") {
+    if (selected === "10210") {
       params.delete("category");
+      params.delete("subcategory");
     } else {
       params.set("category", selected);
     }

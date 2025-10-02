@@ -2,28 +2,10 @@ import axios from "axios";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-// export async function createOrUpdateCart(productId, quantity) {
-//   try {
-//     const response = await axios.post(
-//       `${API_BASE_URL}/api/v1/carts/my-cart`,
-//       {
-//         productId,
-//         quantity,
-//       },
-//       {
-//         withCredentials: true,
-//       }
-//     );
-//     return response.data;
-//   } catch (error) {
-//     throw error || "Something went wrong. Please try again";
-//   }
-// }
-
 export async function createOrUpdateCart(
   productId,
   quantity,
-  mode = "replace"
+  mode = "replace",
 ) {
   console.log(productId);
   const res = await axios.post(
@@ -35,7 +17,7 @@ export async function createOrUpdateCart(
     },
     {
       withCredentials: true,
-    }
+    },
   );
   return res.data;
 }
@@ -52,7 +34,7 @@ export async function removeFromCart(productId) {
     `${API_BASE_URL}/api/v1/carts/my-cart/${productId}`,
     {
       withCredentials: true,
-    }
+    },
   );
   return res.data;
 }

@@ -61,7 +61,7 @@ function AdminRepairJobRow({ job, onUpdateRepairJob, onDeleteRepairJob }) {
 
       {/* Amount */}
       <div className="text-sm font-semibold text-zinc-200">
-        {formatCurrency(amount)}
+        {amount ? formatCurrency(amount) : "N/A"}
       </div>
 
       {/* Actions */}

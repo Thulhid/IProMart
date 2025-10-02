@@ -89,14 +89,14 @@ export default function OrderDetailPage() {
                 >
                   <div className="relative h-16 w-16">
                     <Image
-                      src={item.product.imageCover}
-                      alt={item.product.name}
+                      src={item.img}
+                      alt={item.name}
                       fill
                       className="rounded-lg object-cover"
                     />
                   </div>
                   <div className="space-y-0.5 text-zinc-200">
-                    <p className="leading-5 font-medium">{item.product.name}</p>
+                    <p className="leading-5 font-medium">{item.name}</p>
                     <p className="text-sm text-zinc-400">
                       Qty: {item.quantity} ×{" "}
                       {formatCurrency(item.priceAtPurchase)}

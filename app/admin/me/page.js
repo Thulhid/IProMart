@@ -53,27 +53,27 @@ export default function Page() {
   if (!employee && isLoading) return <Spinner />;
   if (!employee)
     return (
-      <p className="text-zinc-400 font-mono">No employee could be found.</p>
+      <p className="font-mono text-zinc-400">No employee could be found.</p>
     );
 
   return (
     <ContainerBox>
-      <div className="relative w-full max-w-4xl bg-zinc-900 shadow-lg shadow-red-600/40 p-8 rounded-2xl border border-zinc-700">
+      <div className="relative w-full max-w-4xl rounded-2xl border border-zinc-700 bg-zinc-900 p-8 shadow-lg shadow-blue-600/40">
         <Button
-          configStyles="text-zinc-300 text-sm absolute right-5 top-5 flex items-center cursor-pointer gap-1 hover:text-red-600 group"
+          configStyles="text-zinc-300 text-sm absolute right-5 top-5 flex items-center cursor-pointer gap-1 hover:text-blue-700 group"
           onClick={handleLogout}
         >
           <GiBrokenBone
             size={25}
-            className="text-zinc-300 group-hover:text-red-600"
+            className="text-zinc-300 group-hover:text-blue-700"
           />
           Logout
         </Button>
         <AnimateTitle>Account Overview</AnimateTitle>
 
-        <div className="flex flex-col lg:flex-row items-center gap-10 mt-8 px-2">
+        <div className="mt-8 flex flex-col items-center gap-10 px-2 lg:flex-row">
           {/* Profile Image */}
-          <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-zinc-700">
+          <div className="relative h-40 w-40 overflow-hidden rounded-full border-4 border-zinc-700">
             <Image
               src={employee.photo}
               alt={employee.fullName}
@@ -84,7 +84,7 @@ export default function Page() {
           </div>
 
           {/* Info */}
-          <div className="flex-1 w-full text-zinc-300 space-y-4">
+          <div className="w-full flex-1 space-y-4 text-zinc-300">
             <div>
               <h2 className="text-2xl font-semibold text-zinc-100">
                 {employee.fullName}
@@ -94,19 +94,19 @@ export default function Page() {
               </p>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <div className="flex items-center gap-3">
-                <MdEmail className="text-red-500" size={22} />
+                <MdEmail className="text-blue-700" size={22} />
                 <span>{employee.email}</span>
               </div>
               <div className="flex items-center gap-3">
-                <MdPhone className="text-red-500" size={22} />
+                <MdPhone className="text-blue-700" size={22} />
                 <span>{employee.mobileNumber}</span>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="flex flex-wrap gap-3 mt-4">
+            <div className="mt-4 flex flex-wrap gap-3">
               <Button variant="primary" link="/admin/me/update-me">
                 Edit Profile
               </Button>

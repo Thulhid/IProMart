@@ -1,4 +1,3 @@
-import StatusTag from "@/app/_components/RepairJobStatusTag";
 import Slider from "@/app/_components/Slider";
 import { format, parseISO } from "date-fns";
 import { HiWrench } from "react-icons/hi2";
@@ -44,7 +43,7 @@ function RepairJobDetails({ job, children }) {
           {job.request?.serialNumber || "-"}
         </div>
         <div className="text-sm text-zinc-300 sm:col-span-2 lg:col-span-3">
-          <span className="text-zinc-400">Problem:</span>{" "}
+          <span className="text-zinc-400">Issue:</span>{" "}
           {job.request?.problemDescription || "—"}
         </div>
       </div>

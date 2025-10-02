@@ -40,7 +40,7 @@ function Toggle({ id }) {
   return (
     <button
       onClick={handleClick}
-      className="w-fit focus:rounded focus:ring focus:ring-blue-400"
+      className="w-fit focus:rounded focus:ring focus:ring-blue-600"
     >
       <HiEllipsisVertical size={22} className="cursor-pointer text-blue-400" />
     </button>

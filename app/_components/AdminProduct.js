@@ -2,18 +2,20 @@ import AdminProductEdit from "@/app/_components/AdminProductEdit";
 import Button from "@/app/_components/Button";
 import ConfirmDelete from "@/app/_components/ConfirmDelete";
 import Modal from "@/app/_components/Modal";
+import { getCategoryById } from "@/app/_lib/category-service";
 import { formatCurrency } from "@/app/_utils/helper";
 import Image from "next/image";
+import { useEffect } from "react";
 import { HiPencil, HiPencilSquare, HiTrash } from "react-icons/hi2";
 
 function AdminProduct({ product, editingId, onEditingId, onSave, onDelete }) {
   return (
     <div
       key={product._id}
-      className="bg-zinc-900 p-4 rounded-xl shadow-md flex flex-col gap-2"
+      className="flex flex-col gap-2 rounded-xl bg-zinc-900 p-4 shadow-md"
     >
       <Image
-        className="rounded-t-lg object-contain w-full h-30 sm:h-50 md:h-60"
+        className="h-30 w-full rounded-t-lg object-contain sm:h-50 md:h-60"
         src={product.imageCover}
         alt="product image"
         width={400}
@@ -28,9 +30,9 @@ function AdminProduct({ product, editingId, onEditingId, onSave, onDelete }) {
         />
       ) : (
         <>
-          <h2 className="text-lg font-semibold truncate">{product.name}</h2>
-          <p className={`text-sm $`}>
-            {product.category} •{" "}
+          <h2 className="truncate text-lg font-semibold">{product.name}</h2>
+          <p className={`$ text-sm`}>
+            {product.category.name} - {product.subcategory.name} •{" "}
             {product.availability ? (
               <span
                 className={`${
@@ -48,10 +50,10 @@ function AdminProduct({ product, editingId, onEditingId, onSave, onDelete }) {
           <p className="text-sm text-zinc-400">
             {product.isUsed ? "Used" : "Brand New"}
           </p>
-          <p className="font-medium text-base">
+          <p className="text-base font-medium">
             {formatCurrency(product.finalPrice)}
           </p>
-          <div className="flex gap-3 mt-3 items-center">
+          <div className="mt-3 flex items-center gap-3">
             <Button
               link={`/admin/products/${product._id}`}
               configStyles="px-2"

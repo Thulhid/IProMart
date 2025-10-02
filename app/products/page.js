@@ -1,63 +1,41 @@
+import { Suspense } from "react";
+
 import AuthPanel from "@/app/_components/AuthPanel";
 import BottomNavigationBar from "@/app/_components/BottomNavigationBar";
 import HeaderWrapper from "@/app/_components/HeaderWrapper";
 import NavBar from "@/app/_components/NavBar";
-import Pagination from "@/app/_components/Pagination";
-import ProductBox from "@/app/_components/ProductBox";
-import ProductOperations from "@/app/_components/ProductOperations";
 import SearchPanel from "@/app/_components/SearchPanel";
 import Slider from "@/app/_components/Slider";
-import Spinner from "@/app/_components/Spinner";
+
+import { getCategories } from "@/app/_lib/category-service";
 import { getHeroSlides } from "@/app/_lib/heroSlide-service";
-import {
-  getProducts,
-  filterProducts,
-  getCategories,
-} from "@/app/_lib/product-service";
+
+// NOTE: we will render this inside Suspense
+import ProductsAndPagination from "../_components/ProductsAndPagination";
+import Loading from "./loading";
 
 export default async function Page({ searchParams }) {
-  const params = await searchParams;
-  const name = params?.name;
-  const category = params?.category;
-  const used = params?.used;
-  const sortBy = params?.sort;
-  const page = Number(params?.page || 1);
+  const params = (await searchParams) || {};
+  const resCategories = await getCategories();
 
-  const { categories } = await getCategories("products");
   const {
     data: { data: SlideArray },
   } = await getHeroSlides();
 
-  const orderedSlides = SlideArray.slice() // make a shallow copy to avoid mutating original
-    .sort((a, b) => a.order - b.order); // ascending order
-  let products;
-
-  const sort =
-    (sortBy === "name-asc" && "name") ||
-    (sortBy === "name-desc" && "-name") ||
-    (sortBy === "finalPrice-asc" && "finalPrice") ||
-    (sortBy === "finalPrice-desc" && "-finalPrice") ||
-    undefined;
-
-  const isUsed =
-    used === "used" ? true : used === "brand-new" ? false : undefined; // if "all" or not defined, skip filtering
-  if (name || category || typeof isUsed === "boolean" || sort) {
-    products = await filterProducts(name, category, page, isUsed, sort);
-  } else {
-    products = await getProducts(page);
-  }
+  const orderedSlides = SlideArray.slice().sort((a, b) => a.order - b.order);
 
   return (
     <div className="mt-25 w-full">
       <HeaderWrapper
-        leftContent={<SearchPanel categories={categories} />}
+        leftContent={<SearchPanel categories={resCategories.data.data} />}
         rightContent={
-          <div className="hidden xl:flex gap-4">
+          <div className="hidden gap-4 xl:flex">
             <NavBar />
             <AuthPanel />
           </div>
         }
       />
+
       <Slider
         slides={orderedSlides}
         autoSlide
@@ -65,9 +43,11 @@ export default async function Page({ searchParams }) {
         autoSlideInterval={4000}
       />
 
-      <ProductBox products={products.data} />
-      <Pagination count={products.total} />
-      <BottomNavigationBar categories={categories} />
+      <Suspense key={JSON.stringify(params)} fallback={<Loading />}>
+        <ProductsAndPagination searchParams={params} />
+      </Suspense>
+
+      <BottomNavigationBar categories={resCategories.data.data} />
     </div>
   );
 }

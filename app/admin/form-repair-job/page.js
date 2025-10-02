@@ -77,8 +77,6 @@ function FormRepairJobPage() {
     })();
   }, []);
 
-  console.log(requestSummary);
-  //
   const [shippingAddress] =
     requestSummary?.customer?.shippingAddresses?.filter(
       (address) => address.isDefault === true,
@@ -88,18 +86,12 @@ function FormRepairJobPage() {
   const onSubmit = async (data) => {
     const toastId = toast.loading("Saving...");
 
-    let dataObj = {
+    const dataObj = {
       ...data,
       shippingAddress,
+      amount: data.amount ? data.amount : 0,
       shippingFee: isShippingFee ? shippingFee : 0,
     };
-
-    // if (isShippingFee) {
-    //   dataObj = {
-    //     ...data,
-    //     amount: data.amount + shippingFee,
-    //   };
-    // }
 
     try {
       await createRepairJob(dataObj);

@@ -27,7 +27,6 @@ export default async function Page({ params }) {
     price,
     isUsed,
   } = product;
-  console.log(features);
   return (
     // <div className="max-w-5xl 2xl:m-auto">
     <div className="mx-4 my-2 grid grid-cols-1 content-center items-center md:mx-10 xl:grid-cols-2 2xl:m-auto 2xl:max-w-6xl">
@@ -43,7 +42,7 @@ export default async function Page({ params }) {
           <div>
             <h1 className="text-3xl font-semibold text-zinc-300">{name}</h1>
             <h2 className="text-lg text-zinc-400">
-              {uiCategoryFormat(category)}
+              {uiCategoryFormat(category.name)}
             </h2>
           </div>
         </div>
@@ -78,7 +77,7 @@ export default async function Page({ params }) {
           >
             {isUsed ? "Used" : "Brand new"}
           </span>
-          <span className="rounded-full bg-blue-500 px-2 text-blue-50">
+          <span className="rounded-full bg-blue-700 px-2 text-blue-50">
             {" "}
             {warranty
               ? warranty >= 12
@@ -110,7 +109,7 @@ export default async function Page({ params }) {
             {features.map((feature, i) => (
               <p className="mb-1 flex gap-1" key={i}>
                 <SparkEffect>
-                  <HiBolt size={30} />
+                  <HiBolt size={30} className="text-blue-600" />
                 </SparkEffect>
                 <span>{feature}</span>
               </p>
@@ -135,6 +134,5 @@ export default async function Page({ params }) {
         <ProductDetailsActions product={product} />
       </section>
     </div>
-    //  </div>
   );
 }

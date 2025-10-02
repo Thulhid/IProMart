@@ -106,41 +106,49 @@ export default function Page() {
           </div>
 
           <div className="ml-auto flex w-fit flex-col items-end text-base font-semibold text-zinc-100">
-            <div className="text-base">
-              <span className="text-zinc-400">Job Amount: </span>
-              <span>{formatCurrency(job.amount)}</span>
-            </div>
-            {ship > 0 && job.paidAmount === 0 && (
-              <label className="mt-3 inline-flex cursor-pointer items-center gap-2 font-medium select-none">
-                <span>Include shipping fee ({formatCurrency(ship)})</span>
+            {job.amount ? (
+              <>
+                <div className="text-base">
+                  <span className="text-zinc-400">Job Amount: </span>
+                  <span>{formatCurrency(job.amount)}</span>
+                </div>
+                {ship > 0 && job.paidAmount === 0 && (
+                  <label className="mt-3 inline-flex cursor-pointer items-center gap-2 font-medium select-none">
+                    <span>Include shipping fee ({formatCurrency(ship)})</span>
 
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 accent-blue-500"
-                  checked={includeShipping}
-                  onChange={(e) => setIncludeShipping(e.target.checked)}
-                />
-              </label>
-            )}
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 accent-blue-500"
+                      checked={includeShipping}
+                      onChange={(e) => setIncludeShipping(e.target.checked)}
+                    />
+                  </label>
+                )}
 
-            <p className="mt-2 text-lg font-semibold text-zinc-100">
-              Total: {formatCurrency(total)}
-            </p>
-            {job.paidAmount === 0 && (
-              <PayHereRepairButton
-                totalAmount={total}
-                jobId={job._id}
-                configStyles="self-end mt-5"
-              />
-            )}
-            <div className="mt-10 flex flex-col items-end">
-              {job.paidAmount > 0 && <p>Paid amount: {job.paidAmount}</p>}
-              {job.paidAmount > job.amount && (
-                <p className="text-sm font-normal text-zinc-300">
-                  Paid shipping fee ({job.shippingFee}){" "}
+                <p className="mt-2 text-lg font-semibold text-zinc-100">
+                  Total: {formatCurrency(total)}
                 </p>
-              )}
-            </div>
+                {job.paidAmount === 0 && (
+                  <PayHereRepairButton
+                    totalAmount={total}
+                    jobId={job._id}
+                    configStyles="self-end mt-5"
+                  />
+                )}
+                <div className="mt-10 flex flex-col items-end">
+                  {job.paidAmount > 0 && <p>Paid amount: {job.paidAmount}</p>}
+                  {job.paidAmount > job.amount && (
+                    <p className="text-sm font-normal text-zinc-300">
+                      Paid shipping fee ({job.shippingFee}){" "}
+                    </p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div>
+                Job Amount: <span className="font-base">N/A</span>
+              </div>
+            )}
           </div>
         </RepairJobDetails>
       )}
