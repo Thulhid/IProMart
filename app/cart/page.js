@@ -2,7 +2,6 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { HiOutlineChevronLeft } from "react-icons/hi";
-import Button from "@/app/_components/Button";
 import {
   handleRemoveGuestProduct,
   handleSaveGustProduct,
@@ -65,6 +64,7 @@ export default function Page() {
       }
     })();
   }, []);
+
   useEffect(() => {
     (async function () {
       try {

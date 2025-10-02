@@ -17,7 +17,6 @@ import Loading from "./loading";
 export default async function Page({ searchParams }) {
   const params = (await searchParams) || {};
   const resCategories = await getCategories();
-
   const {
     data: { data: SlideArray },
   } = await getHeroSlides();

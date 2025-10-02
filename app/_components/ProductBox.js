@@ -23,7 +23,7 @@ async function ProductBox({ searchParams, products }) {
         )}
 
         {products.data.length === 0 ? (
-          <div>
+          <div className="m-auto">
             <Empty resourceName="Products" />
           </div>
         ) : (
