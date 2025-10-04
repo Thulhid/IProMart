@@ -107,20 +107,20 @@ export default function Page() {
     <ContainerBox>
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-xl bg-zinc-900 shadow-lg shadow-red-600/40 p-8 rounded-2xl border border-zinc-600 text-center"
+        className="w-full max-w-xl rounded-2xl border border-zinc-600 bg-zinc-900 p-8 text-center shadow-lg shadow-blue-600/40"
       >
         <AnimateTitle>
           <IoMdMail />
           Email Verification
         </AnimateTitle>
 
-        <p className="text-zinc-400 text-sm max-w-sm mx-auto">
+        <p className="mx-auto max-w-sm text-sm text-zinc-400">
           We’ve emailed you a 6-digit verification code. Enter it below to
           confirm your email. <br />
           <span className="text-xs">(Valid for only 10 minutes)</span>
         </p>
 
-        <div className="flex justify-center gap-3 mt-8">
+        <div className="mt-8 flex justify-center gap-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <input
               key={i}
@@ -132,7 +132,7 @@ export default function Page() {
               onKeyDown={(e) => handleKeyDown(e, i)}
               onFocus={(e) => e.target.select()}
               onPaste={handlePaste}
-              className="w-10 h-12 sm:w-12 sm:h-14 text-center text-2xl font-bold text-zinc-100 bg-zinc-800 border border-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition"
+              className="h-12 w-10 rounded-lg border border-zinc-600 bg-zinc-800 text-center text-2xl font-bold text-zinc-100 transition focus:ring-2 focus:ring-blue-600 focus:outline-none sm:h-14 sm:w-12"
             />
           ))}
         </div>
@@ -147,14 +147,14 @@ export default function Page() {
           </Button>
         </div>
 
-        <p className="text-sm text-zinc-500 mt-4">
+        <p className="mt-4 text-sm text-zinc-500">
           Didn’t get the code?{" "}
           {cooldownTime === 0 ? (
             <button
               disabled={loading}
               type="button"
               onClick={handleResend}
-              className="text-zinc-200 font-semibold hover:underline cursor-pointer"
+              className="cursor-pointer font-semibold text-zinc-200 hover:underline"
             >
               {loading ? "Resending..." : "Resend"}
             </button>

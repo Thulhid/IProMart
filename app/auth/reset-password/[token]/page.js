@@ -50,7 +50,7 @@ export default function ResetPasswordPage() {
     <ContainerBox>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full max-w-xl bg-zinc-900 shadow-lg shadow-red-600/40 p-8 rounded-2xl border border-zinc-600"
+        className="w-full max-w-xl rounded-2xl border border-zinc-600 bg-zinc-900 p-8 shadow-lg shadow-blue-600/40"
       >
         <AnimateTitle>
           <GiKeyCard />
@@ -59,30 +59,28 @@ export default function ResetPasswordPage() {
 
         <div className="mt-6 space-y-4">
           <div>
-            <label className="block text-zinc-400 mb-1">New Password</label>
+            <label className="mb-1 block text-zinc-400">New Password</label>
             <input
               type="password"
               {...register("password")}
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-500"
-              placeholder="Enter new password"
+              className="input w-full"
             />
             {errors.password && (
-              <p className="text-sm text-red-500 mt-1">
+              <p className="mt-1 text-sm text-red-500">
                 {errors.password.message}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-zinc-400 mb-1">Confirm Password</label>
+            <label className="mb-1 block text-zinc-400">Confirm Password</label>
             <input
               type="password"
               {...register("passwordConfirm")}
-              className="w-full px-4 py-2 bg-zinc-800 border border-zinc-700 text-zinc-100 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors duration-500"
-              placeholder="Confirm new password"
+              className="input w-full"
             />
             {errors.passwordConfirm && (
-              <p className="text-sm text-red-500 mt-1">
+              <p className="mt-1 text-sm text-red-500">
                 {errors.passwordConfirm.message}
               </p>
             )}
