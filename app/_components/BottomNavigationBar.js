@@ -102,7 +102,7 @@ function BottomNavigationBar({ categories }) {
           </Modal.Window>
         </Modal>
 
-        <Link href="/pc-build" className="flex flex-col items-center">
+        <Link href="/pc-builder" className="flex flex-col items-center">
           <PiDesktopTowerThin size={30} className="text-zinc-300" />
           <span className="text-xs text-zinc-400">PC Build</span>
         </Link>
