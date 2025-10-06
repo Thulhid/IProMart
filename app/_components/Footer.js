@@ -31,11 +31,11 @@ export default function Footer() {
           <div className="my-5">
             <Logo
               photoUrl="/logo/logo-white.png"
-              configStyles="!w-100 my-2"
+              configStyles=" my-2"
               width={100}
             />
 
-            <address className="w-full text-xs text-zinc-300 not-italic md:text-sm">
+            <address className="text-xs text-zinc-300 not-italic md:text-sm">
               No. 714, KandyRoad, Thorana Junction, Kelaniya, Sri Lanka
             </address>
           </div>

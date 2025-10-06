@@ -21,11 +21,7 @@ function leftContent({ children }) {
   return (
     <>
       <div className="m-auto inline-block xl:hidden">
-        <Logo
-          photoUrl={"/logo/logo-white.png"}
-          configStyles="!w-50"
-          width={90}
-        />
+        <Logo photoUrl={"/logo/logo-white.png"} />
       </div>
       <div className="flex items-center gap-3">{children}</div>
       <div className="m-auto hidden xl:inline-block">
