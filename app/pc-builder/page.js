@@ -515,7 +515,7 @@ export default function PcBuilderPage() {
         {/* Right: Summary */}
         <div className="space-y-6">
           <ContainerBox isCentered={true}>
-            <div className="min-w-sm rounded-2xl border border-zinc-700 bg-zinc-900 p-6 shadow-lg shadow-blue-600/40 xl:min-w-md">
+            <div className="min-w-xs rounded-2xl border border-zinc-700 bg-zinc-900 p-6 shadow-lg shadow-blue-600/40 sm:min-w-sm xl:min-w-md">
               <h2 className="mb-4 text-lg font-semibold text-zinc-200">
                 Your Build
               </h2>
@@ -543,7 +543,7 @@ export default function PcBuilderPage() {
 
               <div className="mt-4 flex items-center justify-between">
                 <span className="text-zinc-400">Total</span>
-                <span className="text-2xl font-semibold text-zinc-100">
+                <span className="text-xl font-semibold text-zinc-100 md:text-2xl">
                   {formatCurrency(subtotal)}
                 </span>
               </div>
