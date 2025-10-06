@@ -7,7 +7,7 @@ function Product({ product, isHoverScale = true, isPreBuilt = false }) {
 
   return (
     <div
-      className={`flex w-full max-w-xs flex-col rounded-lg border border-zinc-500 bg-zinc-800 shadow-lg transition-all ${isHoverScale ? "hover:scale-105" : ""} hover:shadow-xs hover:shadow-zinc-400 sm:max-w-sm md:max-w-md lg:max-w-xs`}
+      className={`flex w-full max-w-xs flex-col rounded-lg border border-zinc-600 bg-zinc-900 shadow-lg transition-all ${isHoverScale ? "hover:scale-105" : ""} hover:shadow-xs hover:shadow-zinc-400 sm:max-w-sm md:max-w-md lg:max-w-xs`}
     >
       {/* Card Body */}
       <div className="flex flex-1 flex-col justify-between px-4 pb-3 md:pb-5">
