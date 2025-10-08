@@ -7,12 +7,12 @@ export async function signupCustomer(payload) {
     const response = await axios.post(
       `${API_BASE_URL}/api/v1/customers/signup`,
       payload,
-      { withCredentials: true }
+      { withCredentials: true },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -25,12 +25,12 @@ export async function verifyEmail(email, code) {
         email,
         code,
       },
-      { withCredentials: true }
+      { withCredentials: true },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -42,12 +42,12 @@ export async function resendEmailVerificationCode(email) {
       {
         email,
       },
-      { withCredentials: true }
+      { withCredentials: true },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -58,12 +58,12 @@ export async function forgotPassword(email) {
       {
         email,
       },
-      { withCredentials: true }
+      { withCredentials: true },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -75,12 +75,12 @@ export async function resetPassword(token, password, passwordConfirm) {
         password,
         passwordConfirm,
       },
-      { withCredentials: true }
+      { withCredentials: true },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -93,12 +93,12 @@ export async function customerLogin(email, password) {
         email,
         password,
       },
-      { withCredentials: true }
+      { withCredentials: true },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -111,12 +111,12 @@ export async function employeeLogin(email, password) {
         email,
         password,
       },
-      { withCredentials: true }
+      { withCredentials: true },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -124,7 +124,7 @@ export async function employeeLogin(email, password) {
 export async function updateCustomerPassword(
   passwordCurrent,
   password,
-  passwordConfirm
+  passwordConfirm,
 ) {
   try {
     const response = await axios.patch(
@@ -134,12 +134,12 @@ export async function updateCustomerPassword(
         password,
         passwordConfirm,
       },
-      { withCredentials: true }
+      { withCredentials: true },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -147,7 +147,7 @@ export async function updateCustomerPassword(
 export async function updateEmployeePassword(
   passwordCurrent,
   password,
-  passwordConfirm
+  passwordConfirm,
 ) {
   try {
     const response = await axios.patch(
@@ -157,12 +157,12 @@ export async function updateEmployeePassword(
         password,
         passwordConfirm,
       },
-      { withCredentials: true }
+      { withCredentials: true },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -171,12 +171,12 @@ export async function customerLogout() {
   try {
     const response = await axios.get(
       `${API_BASE_URL}/api/v1/customers/logout`,
-      { withCredentials: true }
+      { withCredentials: true },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -185,12 +185,12 @@ export async function employeeLogout() {
   try {
     const response = await axios.get(
       `${API_BASE_URL}/api/v1/employees/logout`,
-      { withCredentials: true }
+      { withCredentials: true },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }

@@ -15,7 +15,7 @@ export async function getEmployee() {
     }
 
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -28,7 +28,7 @@ export async function getEmployees() {
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -40,12 +40,12 @@ export async function createEmployee(payload) {
       payload,
       {
         withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -55,12 +55,12 @@ export async function deleteEmployee(id) {
       `${API_BASE_URL}/api/v1/customers/id/${id}`,
       {
         withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -72,12 +72,12 @@ export async function updateEmployeeById(id, payload) {
       payload,
       {
         withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -88,12 +88,12 @@ export async function getEmployeeById(id) {
       `${API_BASE_URL}/api/v1/employees/id/${id}`,
       {
         withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }
@@ -109,12 +109,12 @@ export async function updateEmployee(fullName, photoFile) {
       formData,
       {
         withCredentials: true,
-      }
+      },
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || "Something went wrong. Please try again"
+      error.response?.data?.message || "Something went wrong. Please try again",
     );
   }
 }

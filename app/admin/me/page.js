@@ -37,7 +37,7 @@ export default function Page() {
       }
     }
     fetchEmployee();
-  }, []);
+  }, [router]);
 
   async function handleLogout() {
     const toastId = toast.loading("Wait a sec...");

@@ -26,8 +26,8 @@ function ConfirmBuyNow({ product, currentQuantity }) {
   }, []);
 
   return (
-    <div className="bg-zinc-900 px-6 py-5 space-y-4 max-w-md w-full">
-      <h3 className="text-lg sm:text-xl font-semibold text-zinc-100">
+    <div className="w-full max-w-md space-y-4 bg-zinc-900 px-6 py-5">
+      <h3 className="text-lg font-semibold text-zinc-100 sm:text-xl">
         Confirm Payment Option
       </h3>
 
@@ -37,7 +37,7 @@ function ConfirmBuyNow({ product, currentQuantity }) {
           id="includeShipping"
           checked={includingShipping}
           onChange={() => setIncludingShipping((prev) => !prev)}
-          className="mt-1 accent-red-600 h-5 w-5"
+          className="mt-1 h-5 w-5 accent-red-600"
         />
         <label htmlFor="includeShipping" className="cursor-pointer">
           Include Shipping Fee ({formatCurrency(shippingFee)})
@@ -45,9 +45,9 @@ function ConfirmBuyNow({ product, currentQuantity }) {
       </div>
 
       {!includingShipping && (
-        <div className="flex items-start gap-2 text-yellow-400 text-sm bg-yellow-500/10 border border-yellow-600 rounded-lg p-3">
+        <div className="flex items-start gap-2 rounded-lg border border-yellow-600 bg-yellow-500/10 p-3 text-sm text-yellow-400">
           <HiOutlineInformationCircle
-            className="min-w-[20px] mt-0.5"
+            className="mt-0.5 min-w-[20px]"
             size={20}
           />
           <span>
@@ -67,13 +67,13 @@ function ConfirmBuyNow({ product, currentQuantity }) {
         Confirm
       </PayHereButton>
 
-      <div className="text-zinc-300 text-base pt-1 border-t border-zinc-700 mt-4">
+      <div className="mt-4 border-t border-zinc-700 pt-1 text-base text-zinc-300">
         <p>
           Total payable now:{" "}
           <span className="font-medium text-white">
             {includingShipping
               ? formatCurrency(
-                  product.finalPrice * currentQuantity + shippingFee
+                  product.finalPrice * currentQuantity + shippingFee,
                 )
               : formatCurrency(product.finalPrice * currentQuantity)}
           </span>

@@ -3,15 +3,19 @@
 import AdminMenuButton from "@/app/_components/AdminMenuButton";
 import Button from "@/app/_components/Button";
 import PcBuilderButton from "@/app/_components/PcBuilderButton";
+import { getCustomerCart } from "@/app/_lib/cart-service";
+import { getCustomer } from "@/app/_lib/customer-service";
 import { getEmployee } from "@/app/_lib/employee-service";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { HiShoppingBag } from "react-icons/hi2";
 
 function NavBar() {
   const [userRole, setUserRole] = useState("");
-  const router = useRouter();
+  const [cartCount, setCartCount] = useState([]);
+  const count = cartCount?.length ?? 0;
   useEffect(function () {
     async function getUserRole() {
       try {
@@ -26,6 +30,17 @@ function NavBar() {
     }
 
     getUserRole();
+  }, []);
+
+  useEffect(() => {
+    (async function () {
+      const resCustomer = await getCustomer();
+      if (resCustomer) {
+        const cartRes = await getCustomerCart();
+        setCartCount(cartRes.cart?.cartItems);
+      }
+      setCartCount(JSON.parse(localStorage.getItem("guestCart")));
+    })();
   }, []);
   return (
     <ul className="flex items-center gap-3 text-lg font-medium">
@@ -60,12 +75,20 @@ function NavBar() {
         {userRole === "admin" || userRole === "employee" ? (
           <AdminMenuButton userRole={userRole} />
         ) : (
-          <Button link="/cart">
-            <HiShoppingBag
-              size={30}
-              className="text-blue-600 hover:brightness-105"
-            />
-          </Button>
+          <div className="relative">
+            <Button link="/cart" aria-label="Cart">
+              <HiShoppingBag
+                size={30}
+                className="text-blue-600 hover:brightness-105"
+              />
+            </Button>
+
+            {count > 0 && (
+              <span className="absolute -top-2 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-700 px-1 text-xs font-bold text-white">
+                {count > 99 ? "99+" : count}
+              </span>
+            )}
+          </div>
         )}
       </li>
     </ul>

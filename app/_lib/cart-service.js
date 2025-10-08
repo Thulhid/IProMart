@@ -7,7 +7,6 @@ export async function createOrUpdateCart(
   quantity,
   mode = "replace",
 ) {
-  console.log(productId);
   const res = await axios.post(
     `${API_BASE_URL}/api/v1/carts/my-cart`,
     {
