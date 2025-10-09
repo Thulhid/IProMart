@@ -2,7 +2,9 @@
 import * as yup from "yup";
 
 export const customerDataSchema = yup.object().shape({
-  fullName: yup.string().required("Full name is required"),
+  // fullName: yup.string(),
+  firstName: yup.string().required("Fist name is required"),
+  lastName: yup.string().required("Last name is required"),
   email: yup
     .string()
     .email("Please provide a valid email")
@@ -23,7 +25,8 @@ export const customerDataSchema = yup.object().shape({
     .required("Please confirm your password"),
 });
 export const customerUpdateSchema = yup.object().shape({
-  fullName: yup.string().required("Full name is required"),
+  firstName: yup.string().required("First name is required"),
+  lastName: yup.string().required("Last name is required"),
 });
 export const loginSchema = yup.object({
   email: yup.string().email().required("Email is required"),
@@ -148,10 +151,15 @@ export const updateProductSchema = yup.object().shape({
 });
 
 export const createEmployeeSchema = yup.object().shape({
-  fullName: yup
+  firstName: yup
     .string()
-    .required("Full name is required")
-    .min(3, "Name must be at least 3 characters")
+    .required("first name is required")
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be at most 50 characters"),
+  firstName: yup
+    .string()
+    .required("last name is required")
+    .min(2, "Name must be at least 2 characters")
     .max(50, "Name must be at most 50 characters"),
   email: yup
     .string()
@@ -169,17 +177,20 @@ export const createEmployeeSchema = yup.object().shape({
 });
 
 export const updateEmployeeSchema = yup.object().shape({
-  fullName: yup
+  firstName: yup
     .string()
-    .required("Full name is required")
-    .min(3, "Name must be at least 3 characters")
+    .required("First name is required")
+    .min(2, "Name must be at least 2 characters")
     .max(50, "Name must be at most 50 characters"),
-
+  lastName: yup
+    .string()
+    .required("First name is required")
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must be at most 50 characters"),
   email: yup
     .string()
     .email("Invalid email format")
     .required("Email is required"),
-
   mobileNumber: yup
     .string()
     .required("Mobile number is required")
@@ -189,10 +200,14 @@ export const updateEmployeeSchema = yup.object().shape({
 });
 
 export const updateCustomerSchema = yup.object().shape({
-  fullName: yup
+  firstName: yup
     .string()
-    .required("Full name is required")
-    .min(3, "Full name must be at least 3 characters"),
+    .required("first name is required")
+    .min(2, "first name must be at least 2 characters"),
+  lastName: yup
+    .string()
+    .required("last name is required")
+    .min(2, "last name must be at least 2 characters"),
 
   email: yup
     .string()
@@ -262,7 +277,8 @@ export const settingSchema = yup.object().shape({
 });
 
 export const employeeUpdateSchema = yup.object().shape({
-  fullName: yup.string().required("Full name is required"),
+  firstName: yup.string().required("first name is required"),
+  lastName: yup.string().required("last name is required"),
 });
 
 const MAX_FILES = 5;

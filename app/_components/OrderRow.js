@@ -22,8 +22,9 @@ function OrderRow({ order, onDelete, onOrder }) {
     orderStatus,
     totalAmount,
     orderItems,
-    customer: { fullName: customerName, email },
+    customer,
   } = order;
+
   return (
     <Table.Row
       styles="grid gap-2 text-xs sm:text-sm md:text-base items-start border-t border-zinc-700 py-3 px-2
@@ -41,10 +42,10 @@ function OrderRow({ order, onDelete, onOrder }) {
       {/* Customer */}
       <div className="flex flex-col">
         <span className="text-sm font-medium text-zinc-300">
-          {customerName}
+          {`${customer?.firstName} ${customer?.lastName}`}
         </span>
         <span className="text-[10px] break-words text-zinc-400 sm:text-xs">
-          {email}
+          {customer?.email}
         </span>
       </div>
 

@@ -37,7 +37,7 @@ function AuthPanel() {
             <Link href="/admin/me">
               <Image
                 src={user?.photo}
-                alt={user.fullName}
+                alt={user.firstName}
                 fill
                 className="object-cover"
                 priority
@@ -47,7 +47,7 @@ function AuthPanel() {
             <Link href="/me">
               <Image
                 src={user.photo}
-                alt={user.fullName}
+                alt={user.firstName}
                 fill
                 className="object-cover"
                 priority

@@ -49,7 +49,8 @@ export default function UpdateCustomerPage() {
         const customer = res.data.data;
 
         reset({
-          fullName: customer.fullName,
+          firstName: customer.firstName,
+          lastName: customer.lastName,
           email: customer.email,
           shippingAddresses: customer.shippingAddresses || [],
         });
@@ -79,7 +80,8 @@ export default function UpdateCustomerPage() {
     try {
       // Update basic fields
       await updateCustomerById(id, {
-        fullName: data.fullName,
+        firstName: data.firstName,
+        lastName: data.lastName,
         email: data.email,
       });
 
@@ -126,9 +128,17 @@ export default function UpdateCustomerPage() {
         >
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
             <div className="flex flex-col gap-1">
-              <label className="text-sm text-zinc-400">Full Name</label>
-              <input type="text" {...register("fullName")} className="input" />
-              <p className="text-sm text-red-500">{errors.fullName?.message}</p>
+              <label className="text-sm text-zinc-400">First Name</label>
+              <input type="text" {...register("firstName")} className="input" />
+              <p className="text-sm text-red-500">
+                {errors.firstName?.message}
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm text-zinc-400">Last Name</label>
+              <input type="text" {...register("lastName")} className="input" />
+              <p className="text-sm text-red-500">{errors.lastName?.message}</p>
             </div>
 
             <div className="flex flex-col gap-1">

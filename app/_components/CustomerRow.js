@@ -9,7 +9,8 @@ function CustomerRow({ customer, onDelete }) {
   const router = useRouter();
   const {
     _id: id,
-    fullName,
+    firstName,
+    lastName,
     email,
     shippingAddresses,
     emailVerified,
@@ -22,7 +23,7 @@ function CustomerRow({ customer, onDelete }) {
     <Table.Row styles=" grid grid-cols-[1.5fr_2fr_3fr_0.5fr] md:grid-cols-[2fr_1fr_3fr_0.5fr] grid-rows-1 items-start border-t border-t-zinc-600 pt-2 text-zinc-300 md:p-2 max-w-6xl bg-zinc-900">
       <div className="flex flex-col">
         <span className="inline-flex items-center gap-0 text-xs md:gap-1 md:text-sm">
-          {fullName}
+          {`${firstName} ${lastName}`}
           {emailVerified && (
             <span className="text-blue-400">
               <HiMiniCheckBadge />{" "}

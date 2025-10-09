@@ -115,7 +115,7 @@ export default function AdminOrderDetailPage() {
                 </p>
                 <p>
                   <span className="text-zinc-400">Customer Name:</span>{" "}
-                  {order.customer.fullName}
+                  {`${order.customer.firstName} ${order.customer.lastName}`}
                 </p>
                 <p>
                   <span className="text-zinc-400">Email:</span>{" "}

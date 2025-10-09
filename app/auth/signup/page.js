@@ -9,7 +9,6 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { SiKeycdn } from "react-icons/si";
 import Button from "@/app/_components/Button";
-import { HiCog6Tooth } from "react-icons/hi2";
 import { useRouter } from "next/navigation";
 import ContainerBox from "@/app/_components/ContainerBox";
 import AnimateTitle from "@/app/_components/AnimateTitle";
@@ -78,7 +77,10 @@ export default function Page() {
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
           {[
             { name: "email", label: "Email", type: "email" },
-            { name: "fullName", label: "Full Name" },
+            // { name: "fullName", label: "Full Name" },
+            { name: "firstName", label: "First Name" },
+            { name: "lastName", label: "Last Name" },
+
             {
               name: "mobileNumber",
               label: "Mobile (07x xxx xxxx)",

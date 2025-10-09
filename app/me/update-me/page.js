@@ -38,7 +38,8 @@ export default function EditProfilePage() {
         const customer = res.data.data;
         setCustomer(customer);
         reset({
-          fullName: customer.fullName,
+          firstName: customer.firstName,
+          lastName: customer.lastName,
           email: customer.email,
         });
         if (customer.photo?.startsWith("http")) {
@@ -62,8 +63,8 @@ export default function EditProfilePage() {
     console.log("Submitted:", data);
     const toastId = toast.loading("Updating profile...");
     try {
-      const { fullName } = data;
-      const res = await updateCustomer(fullName, photoFile);
+      const { firstName, lastName } = data;
+      const res = await updateCustomer(firstName, lastName, photoFile);
       toast.success(res.message, { id: toastId });
     } catch (err) {
       toast.error(err.message, { id: toastId });
@@ -99,7 +100,7 @@ export default function EditProfilePage() {
                 <div className="relative h-32 w-32 shrink-0 overflow-hidden rounded-full border-4 border-zinc-700 sm:h-40 sm:w-40">
                   <Image
                     src={previewUrl || photo || "/default-user.png"}
-                    alt={customer.fullName}
+                    alt={customer.firstName}
                     fill
                     className="object-cover"
                     priority
@@ -123,17 +124,32 @@ export default function EditProfilePage() {
               </div>
 
               <div className="grid w-full gap-6 sm:grid-cols-2">
-                {/* Full Name */}
+                {/* First Name */}
                 <div>
-                  <label className="mb-1 block text-zinc-400">Full Name</label>
+                  <label className="mb-1 block text-zinc-400">First Name</label>
                   <input
                     type="text"
-                    {...register("fullName")}
+                    {...register("firstName")}
                     className="input w-full"
                   />
-                  {errors.fullName && (
+                  {errors.firstName && (
                     <p className="mt-1 text-sm text-red-500">
-                      {errors.fullName.message}
+                      {errors.firstName.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* Last Name */}
+                <div>
+                  <label className="mb-1 block text-zinc-400">Last Name</label>
+                  <input
+                    type="text"
+                    {...register("lastName")}
+                    className="input w-full"
+                  />
+                  {errors.lastName && (
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.lastName.message}
                     </p>
                   )}
                 </div>

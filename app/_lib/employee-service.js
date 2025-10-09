@@ -98,10 +98,10 @@ export async function getEmployeeById(id) {
   }
 }
 
-export async function updateEmployee(fullName, photoFile) {
-  console.log(fullName);
+export async function updateEmployee(firstName, lastName, photoFile) {
   const formData = new FormData();
-  formData.append("fullName", fullName);
+  formData.append("firstName", firstName);
+  formData.append("lastName", lastName);
   if (photoFile) formData.append("photo", photoFile);
   try {
     const response = await axios.patch(

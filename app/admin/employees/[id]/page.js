@@ -36,7 +36,8 @@ export default function UpdateEmployeePage() {
         const res = await getEmployeeById(id);
         const employee = res.data.data;
         reset({
-          fullName: employee.fullName,
+          firstName: employee.firstName,
+          lastName: employee.lastName,
           email: employee.email,
           mobileNumber: employee.mobileNumber,
           role: employee.role,
@@ -86,9 +87,16 @@ export default function UpdateEmployeePage() {
         >
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
             <div className="flex flex-col gap-1">
-              <label className="text-sm text-zinc-400">Full Name</label>
-              <input type="text" {...register("fullName")} className="input" />
-              <p className="text-sm text-red-500">{errors.fullName?.message}</p>
+              <label className="text-sm text-zinc-400">First Name</label>
+              <input type="text" {...register("firstName")} className="input" />
+              <p className="text-sm text-red-500">
+                {errors.firstName?.message}
+              </p>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm text-zinc-400">Last Name</label>
+              <input type="text" {...register("lastName")} className="input" />
+              <p className="text-sm text-red-500">{errors.lastName?.message}</p>
             </div>
 
             <div className="flex flex-col gap-1">

@@ -32,34 +32,45 @@ export default function CreateEmployeePage() {
   };
 
   return (
-    <div className="mx-4 md:mx-10 my-6 2xl:max-w-5xl 2xl:mx-auto">
-      <div className="flex items-center gap-4 mb-6">
+    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-5xl">
+      <div className="mb-6 flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft
-            className="text-zinc-50/50 group-hover:text-red-600 group-active:text-red-600"
+            className="text-zinc-50/50 group-hover:text-zinc-200 group-active:text-zinc-200"
             size={28}
             strokeWidth={3}
           />
         </BackButton>
-        <h1 className="text-3xl text-zinc-300 font-semibold">
+        <h1 className="text-3xl font-semibold text-zinc-300">
           Create Employee
         </h1>
       </div>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-zinc-900 shadow-lg shadow-red-600/40 p-8 rounded-lg border border-zinc-700 space-y-6"
+        className="space-y-6 rounded-lg border border-zinc-700 bg-zinc-900 p-8 shadow-lg shadow-blue-600/40"
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
           <div className="flex flex-col gap-1">
-            <label className="text-sm text-zinc-400">Full Name</label>
+            <label className="text-sm text-zinc-400">First Name</label>
             <input
               type="text"
-              {...register("fullName")}
-              placeholder="John Doe"
-              className="bg-zinc-800 px-4 py-2 rounded-md text-zinc-300 focus:ring-2 focus:ring-red-500 focus:outline-none"
+              {...register("firstName")}
+              placeholder="John"
+              className="input"
             />
-            <p className="text-red-500 text-sm">{errors.fullName?.message}</p>
+            <p className="text-sm text-red-500">{errors.firstName?.message}</p>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-sm text-zinc-400">Last Name</label>
+            <input
+              type="text"
+              {...register("lastName")}
+              placeholder="Doe"
+              className="input"
+            />
+            <p className="text-sm text-red-500">{errors.lastName?.message}</p>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -68,9 +79,9 @@ export default function CreateEmployeePage() {
               type="email"
               {...register("email")}
               placeholder="example@domain.com"
-              className="bg-zinc-800 px-4 py-2 rounded-md text-zinc-300 focus:ring-2 focus:ring-red-500 focus:outline-none"
+              className="input"
             />
-            <p className="text-red-500 text-sm">{errors.email?.message}</p>
+            <p className="text-sm text-red-500">{errors.email?.message}</p>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -78,9 +89,9 @@ export default function CreateEmployeePage() {
             <input
               type="password"
               {...register("password")}
-              className="bg-zinc-800 px-4 py-2 rounded-md text-zinc-300 focus:ring-2 focus:ring-red-500 focus:outline-none"
+              className="input"
             />
-            <p className="text-red-500 text-sm">{errors.password?.message}</p>
+            <p className="text-sm text-red-500">{errors.password?.message}</p>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -89,9 +100,9 @@ export default function CreateEmployeePage() {
               type="text"
               {...register("mobileNumber")}
               placeholder="07xxxxxxxx"
-              className="bg-zinc-800 px-4 py-2 rounded-md text-zinc-300 focus:ring-2 focus:ring-red-500 focus:outline-none"
+              className="input"
             />
-            <p className="text-red-500 text-sm">
+            <p className="text-sm text-red-500">
               {errors.mobileNumber?.message}
             </p>
           </div>
@@ -100,13 +111,13 @@ export default function CreateEmployeePage() {
             <label className="text-sm text-zinc-400">Role</label>
             <select
               {...register("role")}
-              className="bg-zinc-800 px-4 py-2 rounded-md text-zinc-300 focus:ring-2 focus:ring-red-500 focus:outline-none"
+              className="rounded-md bg-zinc-800 px-4 py-2 text-zinc-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
               <option value="">Select a role</option>
               <option value="employee">Employee</option>
               <option value="admin">Admin</option>
             </select>
-            <p className="text-red-500 text-sm">{errors.role?.message}</p>
+            <p className="text-sm text-red-500">{errors.role?.message}</p>
           </div>
         </div>
 

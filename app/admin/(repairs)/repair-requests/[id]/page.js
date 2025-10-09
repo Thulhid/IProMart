@@ -152,7 +152,7 @@ export default function Page() {
           <div className="grid grid-cols-1 gap-2 text-sm text-zinc-300">
             <div className="flex gap-2">
               <span className="w-40 shrink-0 text-zinc-500">Full Name</span>
-              <span className="truncate">{customer?.fullName}</span>
+              <span className="truncate">{`${customer?.firstName} ${customer?.lastName}`}</span>
             </div>
             <div className="flex gap-2">
               <span className="w-40 shrink-0 text-zinc-500">Email</span>

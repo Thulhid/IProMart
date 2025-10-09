@@ -64,7 +64,7 @@ export default function Page() {
             </div>
             <div className="text-base">
               <span className="text-zinc-400">Customer Name: </span>
-              <span>{job.customer.fullName}</span>
+              <span>{`${job.customer.firstName} ${job.customer.lastName}`}</span>
             </div>
             <div className="text-base">
               <span className="text-zinc-400">Email: </span>

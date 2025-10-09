@@ -93,7 +93,7 @@ export default function Page() {
             <div className="relative h-40 w-40 overflow-hidden rounded-full border-4 border-zinc-700">
               <Image
                 src={employee.photo}
-                alt={employee.fullName}
+                alt={employee.firstName}
                 fill
                 className="object-cover"
                 priority
@@ -104,7 +104,7 @@ export default function Page() {
             <div className="w-full flex-1 space-y-4 text-zinc-300">
               <div>
                 <h2 className="text-2xl font-semibold text-zinc-100">
-                  {employee.fullName}
+                  {`${employee.firstName} ${employee.lastName}`}
                 </h2>
                 <p className="text-sm text-zinc-400 capitalize">
                   {employee.role}
