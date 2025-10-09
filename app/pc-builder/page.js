@@ -19,14 +19,30 @@ import Image from "next/image";
 
 // Map builder steps -> category names to match (lowercased). Add/adjust synonyms if needed.
 const CATEGORY_MATCH = {
-  cpu: ["cpu", "processor", "processors"],
-  motherboard: ["motherboard", "mainboard", "mobos"],
-  ram: ["ram", "memory"],
-  gpu: ["gpu", "graphics card", "graphics", "vga"],
-  storage: ["storage", "ssd", "hdd", "nvme", "sata ssd", "hard drive"],
-  case: ["case", "pc case", "chassis"],
-  psu: ["psu", "power supply"],
-  cooler: ["cooler", "cpu cooler", "air cooler", "liquid cooler"],
+  cpu: ["cpu", "CPU", "processor", "processors"],
+  motherboard: ["motherboard", "mainboard", "mobos", "motherboards"],
+  ram: ["ram", "rams", "memory", "RAM"],
+  gpu: ["gpu", "graphics card", "graphics", "vga", "graphic cards"],
+  storage: [
+    "storage",
+    "ssd",
+    "hdd",
+    "nvme",
+    "sata ssd",
+    "hard drive",
+    "storages",
+  ],
+  case: ["case", "pc case", "chassis", "cases", "casings"],
+  psu: ["psu", "power supply", "power supplies"],
+  cooler: [
+    "cooler",
+    "coolers",
+    "cpu cooler",
+    "cpu coolers",
+    "air cooler",
+    "liquid cooler",
+    "liquid coolers",
+  ],
 };
 
 const AMD_CPU_KEYS = /(ryzen)/i;

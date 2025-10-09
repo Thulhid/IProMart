@@ -77,8 +77,8 @@ export default function Page() {
 
         <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
           {[
-            { name: "fullName", label: "Full Name" },
             { name: "email", label: "Email", type: "email" },
+            { name: "fullName", label: "Full Name" },
             {
               name: "mobileNumber",
               label: "Mobile (07x xxx xxxx)",
