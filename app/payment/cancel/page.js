@@ -9,8 +9,8 @@ export default function PaymentCancelPage() {
   const router = useRouter();
 
   return (
-    <div className="mx-4 md:mx-10 my-6 2xl:max-w-4xl 2xl:mx-auto">
-      <div className="flex items-center gap-4 mb-6">
+    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-4xl">
+      <div className="mb-6 flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft
             className="text-zinc-50/50 group-hover:text-red-600 group-active:text-red-600"
@@ -18,23 +18,23 @@ export default function PaymentCancelPage() {
             strokeWidth={3}
           />
         </BackButton>
-        <h1 className="text-3xl text-zinc-300 font-semibold">
+        <h1 className="text-3xl font-semibold text-zinc-300">
           Payment Cancelled
         </h1>
       </div>
 
       <ContainerBox>
-        <div className="flex items-center justify-center px-4 max-w-4xl bg-zinc-900 shadow-lg shadow-red-600/40 p-8 rounded-2xl border border-zinc-700">
-          <div className="text-center space-y-4">
-            <HiXCircle className="text-red-500 mx-auto" size={48} />
-            <h1 className="text-zinc-100 text-2xl font-semibold">
+        <div className="flex max-w-4xl items-center justify-center rounded-2xl border border-zinc-700 bg-zinc-900 p-8 px-4 shadow-lg shadow-red-600/40">
+          <div className="space-y-4 text-center">
+            <HiXCircle className="mx-auto text-red-500" size={48} />
+            <h1 className="text-2xl font-semibold text-zinc-100">
               Payment Cancelled
             </h1>
-            <p className="text-zinc-400 text-sm">
+            <p className="text-sm text-zinc-400">
               You cancelled the payment. No money was deducted.
             </p>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-4 mt-6">
+            <div className="mt-6 flex flex-col justify-center gap-4 sm:flex-row">
               <Button
                 variant="primary"
                 configStyles="w-full sm:w-auto"
@@ -44,9 +44,9 @@ export default function PaymentCancelPage() {
               </Button>
               <Button
                 variant="secondary"
-                link="/products"
+                link="/"
                 configStyles="w-full sm:w-auto"
-                onClick={() => router.replace("/products")}
+                onClick={() => router.replace("/")}
               >
                 Back to Home
               </Button>

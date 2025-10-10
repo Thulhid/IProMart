@@ -95,7 +95,7 @@ export default function Page() {
       const res = await verifyEmail(email, code);
       toast.success(res.message);
       localStorage.setItem("role", "customer");
-      router.push("/products");
+      router.push("/");
     } catch (err) {
       toast.error(err.message);
     } finally {

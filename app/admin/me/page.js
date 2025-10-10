@@ -48,7 +48,7 @@ export default function Page() {
     try {
       const res = await employeeLogout();
       toast.success("Logged Out", { id: toastId });
-      router.push("/products");
+      router.push("/");
     } catch (err) {
       toast.success(err.message, { id: toastId });
     }
