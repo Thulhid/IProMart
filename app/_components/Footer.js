@@ -6,6 +6,7 @@ import { FaSquareFacebook, FaSquareWhatsapp, FaTiktok } from "react-icons/fa6";
 import { SiGmail, SiGooglemaps } from "react-icons/si";
 import MiniSpinner from "@/app/_components/MiniSpinner";
 import Logo from "@/app/_components/Logo";
+import { useEffect, useState } from "react";
 
 const Map = dynamic(() => import("./Map"), {
   ssr: false, // <-- prevent server-side rendering
@@ -20,9 +21,16 @@ const Map = dynamic(() => import("./Map"), {
 });
 
 export default function Footer() {
+  const [show, setShow] = useState(false);
   const latitude = 6.9671488;
   const longitude = 79.9006488;
 
+  useEffect(() => {
+    const timer = setTimeout(() => setShow(true), 1500); // 1.5s delay
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!show) return null;
   return (
     <footer className="mt-5 rounded-b-xl bg-zinc-800 py-2 md:mt-10 md:p-4">
       <div className="mx-2 flex justify-between md:mx-5" role="contentinfo">
@@ -34,7 +42,6 @@ export default function Footer() {
               configStyles=" my-2"
               width={100}
             />
-
             <address className="text-xs text-zinc-300 not-italic md:text-sm">
               No. 714, KandyRoad, Thorana Junction, Kelaniya, Sri Lanka
             </address>

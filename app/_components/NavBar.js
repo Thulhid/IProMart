@@ -7,9 +7,7 @@ import { getCustomerCart } from "@/app/_lib/cart-service";
 import { getCustomer } from "@/app/_lib/customer-service";
 import { getEmployee } from "@/app/_lib/employee-service";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { HiShoppingBag } from "react-icons/hi2";
 
 function NavBar() {
@@ -50,7 +48,7 @@ function NavBar() {
           Category
         </Button>
       </li> */}
-      {(userRole === "customer" || !userRole) && (
+      {(userRole === "customer" || userRole === "guest") && (
         <>
           <motion.li
             className="relative overflow-hidden rounded-lg bg-gradient-to-r from-blue-800 via-blue-500 to-blue-800 bg-[length:200%_200%] px-1 py-1 transition duration-300 ease-in-out hover:scale-105"

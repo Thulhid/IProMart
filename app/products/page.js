@@ -44,9 +44,8 @@ export default async function Page({ searchParams }) {
 
       <Suspense key={JSON.stringify(params)} fallback={<Loading />}>
         <ProductsAndPagination searchParams={params} />
+        <BottomNavigationBar categories={resCategories.data.data} />
       </Suspense>
-
-      <BottomNavigationBar categories={resCategories.data.data} />
     </div>
   );
 }

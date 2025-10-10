@@ -6,7 +6,6 @@ import toast from "react-hot-toast";
 import { HiOutlineChevronLeft } from "react-icons/hi2";
 import BackButton from "@/app/_components/BackButton";
 import Button from "@/app/_components/Button";
-import ContainerBox from "@/app/_components/ContainerBox";
 import { createEmployee } from "@/app/_lib/employee-service";
 import { createEmployeeSchema } from "@/app/_utils/validationSchema";
 

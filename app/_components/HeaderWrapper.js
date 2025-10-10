@@ -1,11 +1,8 @@
 "use client";
 
 import Header from "@/app/_components/Header";
-import SearchPanel from "@/app/_components/SearchPanel";
 import { useScrollAnimation } from "@/app/_hooks/useScrollAnimation";
 import { useState } from "react";
-import { RiMenuFold3Line } from "react-icons/ri";
-import { TfiMenuAlt } from "react-icons/tfi";
 
 function HeaderWrapper({ leftContent, rightContent }) {
   const { headerMotion } = useScrollAnimation();
