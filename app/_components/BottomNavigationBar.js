@@ -25,6 +25,7 @@ import { PiDesktopTowerThin } from "react-icons/pi";
 function BottomNavigationBar({ categories }) {
   const router = useRouter();
   const { open, setOpen, setSelected } = useCategories();
+  const [user, setUser] = useState(null);
 
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [isGuest, setIsGuest] = useState(false);
@@ -53,6 +54,13 @@ function BottomNavigationBar({ categories }) {
     }
     getUser();
   }, []);
+
+  useEffect(() => {
+    (async function getUser() {
+      const localUser = localStorage.getItem("role") || "gust";
+      setUser(localUser);
+    })();
+  }, [setUser]);
 
   const handleAccountClick = () => {
     if (isGuest) {
@@ -128,8 +136,14 @@ function BottomNavigationBar({ categories }) {
           </Modal>
         )}
 
-        {!isGuest && (
+        {user === "customer" && (
           <Link className="flex flex-col items-center" href="/me">
+            <CiUser size={30} className="text-zinc-300" />
+            <span className="text-xs text-zinc-400">Account</span>
+          </Link>
+        )}
+        {!isGuest && (user === "employee" || user === "admin") && (
+          <Link className="flex flex-col items-center" href="/admin/me">
             <CiUser size={30} className="text-zinc-300" />
             <span className="text-xs text-zinc-400">Account</span>
           </Link>
