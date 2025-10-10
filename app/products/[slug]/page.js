@@ -3,7 +3,7 @@ import ProductDetailsActions from "@/app/_components/ProductDetailsActions";
 import Slider from "@/app/_components/Slider";
 import SparkEffect from "@/app/_components/SparkEffect";
 import { getProductBySlug } from "@/app/_lib/product-service";
-import { formatCurrency, uiCategoryFormat } from "@/app/_utils/helper";
+import { formatCurrency } from "@/app/_utils/helper";
 import { HiBolt, HiOutlineChevronLeft } from "react-icons/hi2";
 
 export default async function Page({ params }) {
@@ -40,9 +40,7 @@ export default async function Page({ params }) {
         </BackButton>
         <div>
           <h1 className="text-3xl font-semibold text-zinc-300">{name}</h1>
-          <h2 className="text-lg text-zinc-400">
-            {uiCategoryFormat(category.name)}
-          </h2>
+          <h2 className="text-lg text-zinc-400">{category.name}</h2>
         </div>
       </div>
       <div className="mx-4 my-2 grid grid-cols-1 content-center items-center md:mx-10 xl:grid-cols-2 2xl:m-auto 2xl:max-w-6xl">

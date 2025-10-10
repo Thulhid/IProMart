@@ -7,7 +7,6 @@ import Button from "@/app/_components/Button";
 import { useDebounce } from "@/app/_hooks/useDebounce";
 import { useOutsideClick } from "@/app/_hooks/useOutsideClick";
 import { useCategories } from "@/app/_hooks/useCategories";
-import { uiCategoryFormat } from "@/app/_utils/helper";
 
 function SearchPanel({ categories }) {
   const uiCategories = [
@@ -118,7 +117,7 @@ function SearchPanel({ categories }) {
                   onClick={() => setSelected(category._id)}
                   className="cursor-pointer px-4 py-2 transition-colors duration-200 hover:bg-blue-900 hover:text-blue-50"
                 >
-                  {uiCategoryFormat(category.name)}
+                  {category.name}
                 </li>
               ))}
             </ul>

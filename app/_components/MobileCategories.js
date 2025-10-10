@@ -1,5 +1,3 @@
-import { uiCategoryFormat } from "@/app/_utils/helper";
-
 function MobileCategories({ onCloseModal, categories, onSelected }) {
   const uiCategories = [
     { name: "All Categories", _id: "10210" },
@@ -16,7 +14,7 @@ function MobileCategories({ onCloseModal, categories, onSelected }) {
           }}
           className="cursor-pointer px-4 py-2 text-base text-zinc-300 transition-colors duration-200 active:bg-zinc-300 active:text-blue-600"
         >
-          {uiCategoryFormat(category.name)}
+          {category.name}
         </li>
       ))}
     </ul>

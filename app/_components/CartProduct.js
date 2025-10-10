@@ -2,7 +2,7 @@
 
 import Button from "@/app/_components/Button";
 import SparkEffect from "@/app/_components/SparkEffect";
-import { formatCurrency, uiCategoryFormat } from "@/app/_utils/helper";
+import { formatCurrency } from "@/app/_utils/helper";
 import Image from "next/image";
 import { HiMinusSmall, HiPlusSmall, HiXMark } from "react-icons/hi2";
 import { GiCrossMark } from "react-icons/gi";
