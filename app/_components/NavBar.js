@@ -31,15 +31,18 @@ function NavBar() {
   }, []);
 
   useEffect(() => {
+    setCartCount([]);
     (async function () {
       const resCustomer = await getCustomer();
       if (resCustomer) {
         const cartRes = await getCustomerCart();
         setCartCount(cartRes.cart?.cartItems);
+      } else {
+        setCartCount(JSON.parse(localStorage.getItem("guestCart")));
       }
-      setCartCount(JSON.parse(localStorage.getItem("guestCart")));
     })();
   }, []);
+
   return (
     <ul className="flex items-center gap-3 text-lg font-medium">
       {/* <li className="hidden xl:block">
