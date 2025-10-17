@@ -142,6 +142,7 @@ function BottomNavigationBar({ categories }) {
             <span className="text-xs text-zinc-400">Account</span>
           </Link>
         )}
+
         {!isGuest && (user === "employee" || user === "admin") && (
           <Link className="flex flex-col items-center" href="/admin/me">
             <CiUser size={30} className="text-zinc-300" />

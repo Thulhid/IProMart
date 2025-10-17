@@ -76,7 +76,6 @@ export async function getProductById(id) {
 }
 
 export async function updateProductById(id, payload) {
-  console.log(payload);
   for (let [key, val] of payload.entries()) {
     console.log(`${key}:`, val);
   }

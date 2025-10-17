@@ -5,9 +5,11 @@ import { HiCog6Tooth } from "react-icons/hi2";
 import Link from "next/link";
 import Button from "@/app/_components/Button";
 import { CiSettings } from "react-icons/ci";
+import { getEmployee } from "@/app/_lib/employee-service";
 
 export default function AdminMenuButton({ userRole }) {
   const [open, setOpen] = useState(false);
+  const [dbUser, setDbUser] = useState("");
   const dropdownRef = useRef();
 
   // Close when clicking outside
@@ -19,6 +21,13 @@ export default function AdminMenuButton({ userRole }) {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const user = await getEmployee();
+      setDbUser(user.data.data.role);
+    })();
   }, []);
 
   if (userRole !== "admin" && userRole !== "employee") return null;
@@ -97,14 +106,16 @@ export default function AdminMenuButton({ userRole }) {
                   Manage Customers
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/admin/employees"
-                  className="block px-4 py-2 transition-colors duration-200 hover:bg-zinc-300 hover:text-blue-600 active:bg-zinc-300 active:text-blue-600"
-                >
-                  Manage Employees
-                </Link>
-              </li>
+              {dbUser === "admin" && (
+                <li>
+                  <Link
+                    href="/admin/employees"
+                    className="block px-4 py-2 transition-colors duration-200 hover:bg-zinc-300 hover:text-blue-600 active:bg-zinc-300 active:text-blue-600"
+                  >
+                    Manage Employees
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link
                   href="/admin/setting"
