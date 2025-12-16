@@ -1,6 +1,6 @@
 "use client";
 
-import { Children, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { redirect, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { createPay } from "@/app/_lib/payhere-service";
@@ -16,6 +16,7 @@ export default function PayHereButton({
   item,
   configStyles,
   quantity,
+  couponCode,
 }) {
   const router = useRouter();
   const [isPayHereReady, setIsPayHereReady] = useState(false);
@@ -53,15 +54,20 @@ export default function PayHereButton({
       toast.error("PayHere SDK is not loaded yet");
       return;
     } else if (!customer) {
-      // toast.error("You are not logged in. Please logged in to continue");
       redirect("/auth/login");
     }
 
     try {
-      const res = await createPay(isCart, customer, includingShipping, {
-        item,
-        quantity,
-      });
+      const res = await createPay(
+        isCart,
+        customer,
+        includingShipping,
+        {
+          item,
+          quantity,
+        },
+        couponCode,
+      );
       const payhereParams = res.payhereParams;
 
       window.payhere.onCompleted = function (orderId) {

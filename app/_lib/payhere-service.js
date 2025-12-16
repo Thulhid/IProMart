@@ -1,8 +1,13 @@
 import axios from "axios";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
-
-export async function createPay(isCart, customer, includingShipping, itemObj) {
+export async function createPay(
+  isCart,
+  customer,
+  includingShipping,
+  itemObj,
+  couponCode,
+) {
   try {
     const response = await axios.post(
       `${API_BASE_URL}/api/v1/payhere/session`,
@@ -11,7 +16,9 @@ export async function createPay(isCart, customer, includingShipping, itemObj) {
         customer,
         includingShipping,
         itemObj,
+        couponCode,
       },
+      { withCredentials: true },
     );
     return response.data;
   } catch (error) {
