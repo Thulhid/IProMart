@@ -14,7 +14,7 @@ import {
   getCustomerCart,
   removeFromCart,
 } from "@/app/_lib/cart-service";
-import { getCustomer } from "@/app/_lib/customer-service"; // ✅ used to detect login
+import { getCustomer } from "@/app/_lib/customer-service";
 import Spinner from "@/app/_components/Spinner";
 import { HiOutlineInformationCircle, HiShoppingBag } from "react-icons/hi2";
 import toast from "react-hot-toast";
@@ -320,7 +320,7 @@ export default function Page() {
               isCart={true}
               isLoading={isLoading}
               includingShipping={includingShipping}
-              couponCode={appliedCoupon} // ✅ send to backend at checkout (your PayHereButton must forward it)
+              couponCode={appliedCoupon}
               variant="buy"
             >
               Checkout

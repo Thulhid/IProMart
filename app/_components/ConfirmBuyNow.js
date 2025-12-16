@@ -7,7 +7,7 @@ import { formatCurrency } from "@/app/_utils/helper";
 import PayHereButton from "@/app/_components/PayHereButton";
 import Button from "@/app/_components/Button";
 import toast from "react-hot-toast";
-import { quoteCoupon } from "@/app/_lib/coupon-service";
+import { quoteItemCoupon } from "@/app/_lib/coupon-service";
 
 function ConfirmBuyNow({ product, currentQuantity }) {
   const [shippingFee, setShippingFee] = useState(null);
@@ -18,12 +18,10 @@ function ConfirmBuyNow({ product, currentQuantity }) {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [discountAmount, setDiscountAmount] = useState(0);
 
-  function clearCouponSilently() {
+  function removeCoupon() {
+    setAppliedCoupon(null);
+    setDiscountAmount(0);
     setCouponInput("");
-    if (appliedCoupon || discountAmount > 0) {
-      setAppliedCoupon(null);
-      setDiscountAmount(0);
-    }
   }
 
   async function handleApplyCoupon() {
@@ -32,9 +30,13 @@ function ConfirmBuyNow({ product, currentQuantity }) {
 
     const toastId = toast.loading("Applying coupon...");
     setIsApplyingCoupon(true);
-    console.log(code, includingShipping);
     try {
-      const data = await quoteCoupon(code, includingShipping);
+      const data = await quoteItemCoupon(
+        code,
+        includingShipping,
+        product._id,
+        currentQuantity,
+      );
       if (!data?.coupon?.valid) {
         setAppliedCoupon(null);
         setDiscountAmount(0);
@@ -61,9 +63,12 @@ function ConfirmBuyNow({ product, currentQuantity }) {
       toast.error(err.message || "Failed to apply coupon", { id: toastId });
     } finally {
       setIsApplyingCoupon(false);
-      clearCouponSilently();
     }
   }
+
+  useEffect(() => {
+    removeCoupon();
+  }, [includingShipping]);
 
   useEffect(() => {
     (async function () {
@@ -125,6 +130,25 @@ function ConfirmBuyNow({ product, currentQuantity }) {
         </div>
       </div>
 
+      {appliedCoupon && discountAmount > 0 && (
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-green-400">Applied: {appliedCoupon}</span>
+          <button
+            type="button"
+            className="text-zinc-300 underline"
+            onClick={removeCoupon}
+          >
+            Remove
+          </button>
+        </div>
+      )}
+      {discountAmount > 0 && (
+        <div className="flex justify-between text-sm text-zinc-300">
+          <span>Coupon Discount:</span>
+          <span>- {formatCurrency(discountAmount)}</span>
+        </div>
+      )}
+
       {!includingShipping && (
         <div className="flex items-start gap-2 rounded-lg border border-yellow-600 bg-yellow-500/10 p-3 text-sm text-yellow-400">
           <HiOutlineInformationCircle
@@ -144,6 +168,7 @@ function ConfirmBuyNow({ product, currentQuantity }) {
         item={product}
         quantity={currentQuantity}
         configStyles="ml-auto !text-base"
+        couponCode={appliedCoupon}
       >
         Confirm
       </PayHereButton>
