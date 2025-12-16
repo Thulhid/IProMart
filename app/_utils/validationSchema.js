@@ -336,3 +336,23 @@ export const createRepairJobSchema = yup.object({
     ),
   shippingIncluded: yup.boolean().required("Missing shipping fee check box"),
 });
+
+//coupons
+const num = (label) =>
+  yup
+    .number()
+    .transform((val, originalVal) => (originalVal === "" ? undefined : val))
+    .typeError(`${label} must be a number`)
+    .min(0, `${label} must be >= 0`)
+    .required(`${label} is required`);
+
+export const couponSchema = yup.object({
+  code: yup
+    .string()
+    .trim()
+    .required("Coupon code is required")
+    .matches(/^[A-Z0-9_-]+$/, "Use only A-Z, 0-9, _ or -"),
+  minSubtotal: num("Min subtotal"),
+  discountAmount: num("Discount amount"),
+  isActive: yup.boolean().default(true),
+});
