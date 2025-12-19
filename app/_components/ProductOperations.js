@@ -19,14 +19,14 @@ function ProductOperations() {
       <SortBy
         options={[
           { value: "newest", label: "Sort by newest" },
-          { value: "name-asc", label: "Sort by name (A-Z)" },
-          { value: "name-desc", label: "Sort by name (Z-A)" },
-          { value: "finalPrice-asc", label: "Sort by price (low first)" },
-          { value: "finalPrice-desc", label: "Sort by price (high first)" },
           { value: "-clicks", label: "Most clicked" },
           { value: "clicks", label: "Least clicked" },
           { value: "-unitsSold", label: "Most sold (qty)" },
           { value: "unitsSold", label: "Least sold (qty)" },
+          { value: "name-asc", label: "Sort by name (A-Z)" },
+          { value: "name-desc", label: "Sort by name (Z-A)" },
+          { value: "finalPrice-asc", label: "Sort by price (low first)" },
+          { value: "finalPrice-desc", label: "Sort by price (high first)" },
         ]}
       />
     </div>
