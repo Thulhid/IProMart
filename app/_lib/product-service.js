@@ -131,3 +131,21 @@ export async function deleteProduct(id) {
     );
   }
 }
+
+export async function incrementProductClicksBySlug(slug) {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/api/v1/products/slug/${slug}/click`,
+      null,
+      {
+        withCredentials: true,
+      },
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error increment product clicks:", error);
+    throw new Error(
+      error.response?.data?.message || "Something went wrong. Please try again",
+    );
+  }
+}

@@ -1,17 +1,27 @@
+"use client";
+
 import Image from "next/image";
-import Link from "next/link";
 import { formatCurrency } from "@/app/_utils/helper";
+import { useRouter } from "next/navigation";
+import { incrementProductClicksBySlug } from "@/app/_lib/product-service";
 
 function Product({ product, isHoverScale = true, isPreBuilt = false }) {
   const hasDiscount = Boolean(product.priceDiscount);
 
+  const router = useRouter();
   return (
     <div
       className={`flex w-full max-w-xs flex-col rounded-lg border border-zinc-600 bg-zinc-900 shadow-lg transition-all ${isHoverScale ? "hover:scale-105" : ""} hover:shadow-xs hover:shadow-zinc-400 sm:max-w-sm md:max-w-md lg:max-w-xs`}
     >
       {/* Card Body */}
       <div className="flex flex-1 flex-col justify-between px-4 pb-3 md:pb-5">
-        <Link href={`/products/${product.slug}`} key={product._id}>
+        <div
+          key={product._id}
+          onClick={() => {
+            router.push(`/products/${product.slug}`);
+            incrementProductClicksBySlug(product.slug);
+          }}
+        >
           <Image
             className="h-30 w-full rounded-t-lg object-contain sm:h-50 md:h-60"
             src={product.imageCover}
@@ -52,7 +62,7 @@ function Product({ product, isHoverScale = true, isPreBuilt = false }) {
           <span className="block py-2 text-base font-bold text-zinc-200 sm:text-lg md:text-xl">
             {formatCurrency(product.finalPrice)}
           </span>
-        </Link>
+        </div>
 
         {/* Button */}
       </div>

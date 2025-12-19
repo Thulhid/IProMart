@@ -11,6 +11,7 @@ async function ProductBox({ searchParams, products }) {
     const category = await getCategoryById(searchParams?.category);
     subs = category.data.data.subcategories;
   }
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-5">
       <ProductOperations />

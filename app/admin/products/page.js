@@ -16,7 +16,7 @@ import NavBar from "@/app/_components/NavBar";
 import AdminProductBox from "@/app/_components/AdminProductBox";
 import AuthPanel from "@/app/_components/AuthPanel";
 import { getCategories } from "@/app/_lib/category-service";
-import { motion } from "framer-motion";
+import ProductOperations from "@/app/_components/ProductOperations";
 
 export default function AdminProductsPage() {
   const searchParams = useSearchParams();
@@ -30,6 +30,11 @@ export default function AdminProductsPage() {
   const name = searchParams.get("name");
   const category = searchParams.get("category");
   const subcategory = searchParams.get("subcategory");
+  const sort = searchParams.get("sort");
+  const used = searchParams.get("used");
+
+  const isUsed =
+    used === "used" ? true : used === "brand-new" ? false : undefined;
 
   useEffect(() => {
     (async function () {
@@ -38,8 +43,15 @@ export default function AdminProductsPage() {
         setCategories(resCategories.data.data);
 
         const res =
-          name || category || subcategory
-            ? await filterProducts(name, category, page, subcategory)
+          name || category || subcategory || isUsed || sort
+            ? await filterProducts(
+                name,
+                category,
+                page,
+                subcategory,
+                isUsed,
+                sort,
+              )
             : await getProducts(page);
 
         setProducts(res.data?.data);
@@ -48,7 +60,7 @@ export default function AdminProductsPage() {
         toast.error(err.message);
       }
     })();
-  }, [page, name, category]);
+  }, [page, name, category, subcategory, sort, isUsed]);
 
   //   function handleSearch(queryParams) {
   //     const params = new URLSearchParams(queryParams);
@@ -100,6 +112,8 @@ export default function AdminProductsPage() {
           </div>
         }
       />
+      <ProductOperations />
+
       <Button
         link="/admin/products/create-product"
         variant="primary"

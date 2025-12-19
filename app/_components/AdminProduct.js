@@ -2,11 +2,9 @@ import AdminProductEdit from "@/app/_components/AdminProductEdit";
 import Button from "@/app/_components/Button";
 import ConfirmDelete from "@/app/_components/ConfirmDelete";
 import Modal from "@/app/_components/Modal";
-import { getCategoryById } from "@/app/_lib/category-service";
 import { formatCurrency } from "@/app/_utils/helper";
 import Image from "next/image";
-import { useEffect } from "react";
-import { HiPencil, HiPencilSquare, HiTrash } from "react-icons/hi2";
+import { HiPencilSquare } from "react-icons/hi2";
 
 function AdminProduct({ product, editingId, onEditingId, onSave, onDelete }) {
   return (
@@ -52,6 +50,13 @@ function AdminProduct({ product, editingId, onEditingId, onSave, onDelete }) {
           </p>
           <p className="text-base font-medium">
             {formatCurrency(product.finalPrice)}
+          </p>
+          <p className="text-sm text-zinc-400">Clicks: {product.clicks ?? 0}</p>
+          <p className="text-sm text-zinc-400">
+            Orders count: {product.orderCount ?? 0}
+          </p>
+          <p className="text-sm text-zinc-400">
+            Units sold: {product.unitsSold ?? 0}
           </p>
           <div className="mt-3 flex items-center gap-3">
             <Button

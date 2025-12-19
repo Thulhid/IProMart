@@ -10,7 +10,7 @@ function Header({ children, headerMotion, onIsToggleMenu }) {
         paddingTop: headerPadding,
         paddingBottom: headerPadding,
       }}
-      className="fixed top-4 left-1/2 z-1000 flex max-w-7xl -translate-x-1/2 items-center justify-between rounded-xl bg-zinc-700 px-1.5 shadow-lg transition-colors duration-300 md:px-3"
+      className="fixed top-4 left-1/2 z-1000 flex max-w-[2440px] -translate-x-1/2 items-center justify-between rounded-xl bg-zinc-700 px-1.5 shadow-lg transition-colors duration-300 md:px-3"
     >
       {children}
     </motion.div>

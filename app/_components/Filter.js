@@ -26,7 +26,6 @@ function Filter({
     searchParamsToReset?.forEach((param) => {
       params.set(param.name, param.value);
     });
-
     router.push(`?${params.toString()}`);
   }
 
