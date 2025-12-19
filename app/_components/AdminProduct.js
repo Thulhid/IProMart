@@ -51,11 +51,13 @@ function AdminProduct({ product, editingId, onEditingId, onSave, onDelete }) {
           <p className="text-base font-medium">
             {formatCurrency(product.finalPrice)}
           </p>
-          <p className="text-sm text-zinc-400">Clicks: {product.clicks ?? 0}</p>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-yellow-400">
+            Clicks: {product.clicks ?? 0}
+          </p>
+          <p className="text-sm text-zinc-300">
             Orders count: {product.ordersCount ?? 0}
           </p>
-          <p className="text-sm text-zinc-400">
+          <p className="text-sm text-zinc-300">
             Units sold: {product.unitsSold ?? 0}
           </p>
           <div className="mt-3 flex items-center gap-3">
