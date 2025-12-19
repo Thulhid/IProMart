@@ -53,7 +53,7 @@ function AdminProduct({ product, editingId, onEditingId, onSave, onDelete }) {
           </p>
           <p className="text-sm text-zinc-400">Clicks: {product.clicks ?? 0}</p>
           <p className="text-sm text-zinc-400">
-            Orders count: {product.orderCount ?? 0}
+            Orders count: {product.ordersCount ?? 0}
           </p>
           <p className="text-sm text-zinc-400">
             Units sold: {product.unitsSold ?? 0}
