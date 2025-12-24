@@ -29,7 +29,7 @@ export default async function Page({ params }) {
   } = product;
   return (
     // <div className="max-w-5xl 2xl:m-auto">
-    <>
+    <div className="m-auto max-w-[1440px]">
       <div className="flex items-start gap-3">
         <BackButton>
           <HiOutlineChevronLeft
@@ -43,7 +43,7 @@ export default async function Page({ params }) {
           <h2 className="text-lg text-zinc-400">{category.name}</h2>
         </div>
       </div>
-      <div className="mx-4 my-2 grid grid-cols-1 content-center items-center md:mx-10 xl:grid-cols-2 2xl:m-auto 2xl:max-w-6xl">
+      <div className="2xl:m-auto] mx-4 my-2 grid grid-cols-1 content-center items-center md:mx-10 xl:grid-cols-2">
         <section>
           <Slider slides={images} />
           <div className="flex flex-col items-center">
@@ -133,6 +133,6 @@ export default async function Page({ params }) {
           <ProductDetailsActions product={product} />
         </section>
       </div>
-    </>
+    </div>
   );
 }

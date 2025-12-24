@@ -33,7 +33,7 @@ export default function MyOrdersPage() {
   }, []);
 
   return (
-    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-5xl">
+    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-[1440px]">
       {/* ✅ Always show this */}
       <div className="mb-6 flex items-center gap-4">
         <BackButton>

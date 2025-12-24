@@ -49,7 +49,7 @@ export default function OrderDetailPage() {
     return <p className="py-20 text-center text-zinc-400">Order not found.</p>;
 
   return (
-    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-5xl">
+    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-[1440px]">
       <div className="mb-6 flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft

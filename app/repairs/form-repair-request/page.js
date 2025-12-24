@@ -136,7 +136,7 @@ export default function FormRepairRequestPage() {
   const desc = watch("problemDescription") || "";
 
   return (
-    <>
+    <div className="m-auto max-w-[1440px]">
       <div className="flex items-start">
         <BackButton>
           <HiOutlineChevronLeft
@@ -360,6 +360,6 @@ export default function FormRepairRequestPage() {
           </aside>
         </div>
       </div>
-    </>
+    </div>
   );
 }

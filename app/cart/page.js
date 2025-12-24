@@ -192,7 +192,7 @@ export default function Page() {
   const total = Math.max(0, baseTotal - (discountAmount || 0));
 
   return (
-    <div className="mx-auto max-w-screen-2xl px-4 py-6 sm:px-6 md:px-10">
+    <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 md:px-10">
       <div className="mb-6 flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft
