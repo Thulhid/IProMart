@@ -84,7 +84,7 @@ export default function Page() {
   if (loading) return <Spinner />;
 
   return (
-    <div className="mx-4 my-2 grid grid-cols-1 content-center items-start gap-8 md:mx-10 xl:grid-cols-2 2xl:m-auto 2xl:max-w-6xl">
+    <div className="mx-4 my-2 grid grid-cols-1 content-center items-start gap-8 md:mx-10 xl:grid-cols-2 2xl:m-auto 2xl:max-w-[1440px]">
       {/* LEFT: header + media */}
       <section>
         {photos?.length ? (

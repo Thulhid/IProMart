@@ -61,7 +61,7 @@ export default function Page() {
     );
 
   return (
-    <>
+    <div className="m-auto max-w-[1440px]">
       <div className="mb-6 flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft
@@ -135,6 +135,6 @@ export default function Page() {
           </div>
         </div>
       </ContainerBox>
-    </>
+    </div>
   );
 }

@@ -73,7 +73,7 @@ function Page() {
   }
 
   return (
-    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-5xl">
+    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-[1440px]">
       <div className="mb-6 flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft
@@ -97,7 +97,7 @@ function Page() {
               placeholder="Search by Order ID"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="min-w-sm rounded-xl bg-zinc-800 px-4 py-2 text-sm text-zinc-200 placeholder-zinc-400 outline-none focus:ring-2 focus:ring-red-500 sm:max-w-sm"
+              className="min-w-sm rounded-xl bg-zinc-800 px-4 py-2 text-sm text-zinc-200 placeholder-zinc-400 outline-none focus:ring focus:ring-blue-700 sm:max-w-sm"
             />
             <Button buttonType="submit" variant="primary" configStyles="w-fit">
               Search

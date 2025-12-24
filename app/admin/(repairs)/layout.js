@@ -18,7 +18,7 @@ export default function CourseLayout({ children, params }) {
   ];
 
   return (
-    <>
+    <div className="m-auto max-w-[1440px]">
       <div className="mb-6 flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft
@@ -59,6 +59,6 @@ export default function CourseLayout({ children, params }) {
         </div>
         <div className="p-4">{children}</div>
       </div>
-    </>
+    </div>
   );
 }

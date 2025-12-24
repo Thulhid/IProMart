@@ -13,7 +13,7 @@ import SparkEffect from "@/app/_components/SparkEffect";
 
 export default function AboutPage() {
   return (
-    <div className="mx-4 my-6 2xl:mx-auto 2xl:max-w-4xl">
+    <div className="mx-4 my-6 2xl:mx-auto 2xl:max-w-[1440px]">
       <div className="mb-6 flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft

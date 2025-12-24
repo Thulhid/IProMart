@@ -192,7 +192,7 @@ export default function UpdateProductPage() {
   if (!product) return <p className="text-zinc-400">Loading product...</p>;
 
   return (
-    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-5xl">
+    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-[1440px]">
       <div className="mb-6 flex items-center gap-4">
         <BackButton>
           <HiOutlineChevronLeft

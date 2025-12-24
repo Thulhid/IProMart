@@ -105,7 +105,7 @@ function FormRepairJobPage() {
 
   if (isLoading) return <Spinner />;
   return (
-    <>
+    <div className="m-auto max-w-[1440px]">
       <div className="flex items-start gap-3">
         <BackButton>
           <HiOutlineChevronLeft
@@ -262,7 +262,7 @@ function FormRepairJobPage() {
           </div>
         </form>
       </div>
-    </>
+    </div>
   );
 }
 

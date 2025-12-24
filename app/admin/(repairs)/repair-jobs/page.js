@@ -13,7 +13,6 @@ import {
   getRepairJobs,
   updateRepairJob,
 } from "@/app/_lib/repairing-service";
-import Pagination from "@/app/_components/Pagination";
 
 function RepairJobs() {
   const [jobs, setJobs] = useState([]);

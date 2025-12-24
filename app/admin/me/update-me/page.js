@@ -73,7 +73,7 @@ export default function EditProfilePage() {
   };
 
   return (
-    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-4xl">
+    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-[1440px]">
       {/* Back button and title */}
       <div className="mb-6 flex items-center gap-4">
         <BackButton>

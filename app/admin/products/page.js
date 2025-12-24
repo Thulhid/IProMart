@@ -101,7 +101,7 @@ export default function AdminProductsPage() {
   }
 
   return (
-    <div className="mx-auto mt-20 max-w-screen-2xl px-4 py-6 text-zinc-300 sm:px-6 md:px-10">
+    <div className="mx-auto mt-20 max-w-[1440px] px-4 py-6 text-zinc-300 sm:px-6 md:px-10">
       <div className="relative flex items-center justify-between"></div>
       <HeaderWrapper
         leftContent={<SearchPanel categories={categories} />}

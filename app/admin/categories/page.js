@@ -221,7 +221,7 @@ export default function AdminCategoriesPage() {
   }
 
   return (
-    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-6xl">
+    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-[1440px]">
       {/* Header */}
       <div className="flex items-center gap-4">
         <BackButton>
