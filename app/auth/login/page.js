@@ -62,7 +62,7 @@ export default function Page() {
           : await customerLogin(email, password);
 
       toast.success(res.message, { id: toastId });
-      router.push("/");
+      role === "employee" ? router.push("/admin/dashboard") : router.push("/");
     } catch (err) {
       toast.error(err.message, { id: toastId });
     } finally {

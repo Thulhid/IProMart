@@ -7,12 +7,15 @@ import { getCustomerCart } from "@/app/_lib/cart-service";
 import { getCustomer } from "@/app/_lib/customer-service";
 import { getEmployee } from "@/app/_lib/employee-service";
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { HiShoppingBag } from "react-icons/hi2";
 
 function NavBar() {
   const [userRole, setUserRole] = useState("");
   const [cartCount, setCartCount] = useState([]);
+  const pathname = usePathname();
+
   const count = cartCount?.length ?? 0;
   useEffect(function () {
     async function getUserRole() {
@@ -74,7 +77,17 @@ function NavBar() {
       )}
       <li>
         {userRole === "admin" || userRole === "employee" ? (
-          <AdminMenuButton userRole={userRole} />
+          <div className="flex gap-2">
+            {pathname !== "/admin/dashboard" && (
+              <div className="rounded-lg bg-gradient-to-r from-blue-800 via-blue-500 to-blue-800 bg-[length:200%_200%] px-1 py-1 transition duration-300 ease-in-out hover:scale-105">
+                {" "}
+                <Button link="/admin/dashboard" variant="header">
+                  Dashboard
+                </Button>
+              </div>
+            )}
+            <AdminMenuButton userRole={userRole} />
+          </div>
         ) : (
           <div className="relative">
             <Button link="/cart" aria-label="Cart">
