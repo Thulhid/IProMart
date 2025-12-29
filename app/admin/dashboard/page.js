@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { parseISO, format } from "date-fns";
 import {
@@ -40,13 +40,28 @@ function StatCard({ icon, label, value }) {
         <div className="text-zinc-400">{icon}</div>
       </div>
       <p className="mt-2 text-xl font-semibold tracking-tight text-zinc-200 sm:text-2xl">
-        {value}
+        {value ?? 0}
       </p>
     </div>
   );
 }
 
 export default function AdminDashboardPage() {
+  const [mode, setMode] = useState("preset"); // "preset" | "custom"
+  const [days, setDays] = useState(7);
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+
+  //  Applied range (used for API calls)
+  const [from, setFrom] = useState(todayStr);
+  const [to, setTo] = useState(todayStr);
+
+  //  Draft range (user edits here; does NOT trigger API calls)
+  const [draftFrom, setDraftFrom] = useState(todayStr);
+  const [draftTo, setDraftTo] = useState(todayStr);
+
+  const [applyTick, setApplyTick] = useState(0); // trigger fetch for custom
+
   const [payload, setPayload] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -54,7 +69,11 @@ export default function AdminDashboardPage() {
     (async () => {
       setIsLoading(true);
       try {
-        const res = await getAdminDashboard();
+        const res =
+          mode === "preset"
+            ? await getAdminDashboard({ days })
+            : await getAdminDashboard({ from, to });
+
         setPayload(res?.data);
       } catch (err) {
         toast.error(err.message || "Failed to load dashboard");
@@ -62,9 +81,9 @@ export default function AdminDashboardPage() {
         setIsLoading(false);
       }
     })();
-  }, []);
+  }, [mode, days, from, to, applyTick]);
 
-  const totals = payload?.totals || {
+  const rangeTotals = payload?.rangeTotals || {
     products: 0,
     categories: 0,
     coupons: 0,
@@ -75,12 +94,15 @@ export default function AdminDashboardPage() {
   const recentOrders = payload?.recentOrders || [];
 
   const statusRows = useMemo(() => {
-    const ordersByStatus = payload?.ordersByStatus || {};
+    //  use range-based status counts when available
+    const ordersByStatus =
+      payload?.rangeOrdersByStatus ?? payload?.ordersByStatus ?? {};
+
     return ORDER_STATUSES.map((s) => ({
       status: s,
-      count: ordersByStatus?.[s] ?? 0,
+      count: ordersByStatus[s] ?? 0,
     }));
-  }, [payload?.ordersByStatus]);
+  }, [payload?.rangeOrdersByStatus, payload?.ordersByStatus]);
 
   return (
     <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-[1440px]">
@@ -92,6 +114,7 @@ export default function AdminDashboardPage() {
           </div>
         }
       />
+
       <div className="mt-30 mb-15 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-3xl font-semibold text-zinc-300">Dashboard</h1>
@@ -129,6 +152,79 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
+      <div className="mt-4 ml-auto flex w-fit flex-col gap-3 rounded-2xl sm:flex-row sm:items-center sm:justify-between">
+        {/* Presets */}
+        <div className="flex flex-wrap gap-2">
+          {[7, 30, 90].map((d) => (
+            <button
+              key={d}
+              type="button"
+              onClick={() => {
+                setMode("preset");
+                setDays(d);
+              }}
+              className={`cursor-pointer rounded-xl px-2 text-xs font-medium transition ${
+                mode === "preset" && days === d
+                  ? "bg-blue-700 text-blue-50"
+                  : "border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+              }`}
+            >
+              Last {d} days
+            </button>
+          ))}
+
+          <button
+            type="button"
+            onClick={() => setMode("custom")}
+            className={`cursor-pointer rounded-xl px-4 py-2 text-xs font-medium transition ${
+              mode === "custom"
+                ? "bg-blue-700 text-blue-50"
+                : "border-zinc-700 bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+            }`}
+          >
+            Custom
+          </button>
+        </div>
+
+        {/* Custom range */}
+        {mode === "custom" && (
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-zinc-400">From</label>
+              <input
+                type="date"
+                value={draftFrom}
+                onChange={(e) => setDraftFrom(e.target.value)}
+                className="rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-200"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <label className="text-xs text-zinc-400">To</label>
+              <input
+                type="date"
+                value={draftTo}
+                onChange={(e) => setDraftTo(e.target.value)}
+                className="rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-200"
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                //  only now apply to API params
+                setFrom(draftFrom);
+                setTo(draftTo);
+                setApplyTick((x) => x + 1);
+              }}
+              className="cursor-pointer rounded-lg bg-blue-700 px-2 py-2 text-xs font-semibold text-blue-50 hover:bg-blue-600"
+            >
+              Apply
+            </button>
+          </div>
+        )}
+      </div>
+
       {isLoading ? (
         <div className="mt-10">
           <Spinner />
@@ -140,27 +236,27 @@ export default function AdminDashboardPage() {
             <StatCard
               icon={<FaMoneyBillWave size={19} />}
               label="Total sales (Paid)"
-              value={formatCurrency(totals.sales)}
+              value={formatCurrency(rangeTotals.sales)}
             />
             <StatCard
               icon={<HiClipboardDocumentList size={20} />}
               label="Total orders"
-              value={totals.orders}
+              value={rangeTotals.orders}
             />
             <StatCard
               icon={<HiCube size={20} />}
               label="Total products"
-              value={totals.products}
+              value={rangeTotals.newProducts}
             />
             <StatCard
               icon={<HiSquares2X2 size={20} />}
               label="Total categories"
-              value={totals.categories}
+              value={rangeTotals.newCategories}
             />
             <StatCard
               icon={<HiTag size={20} />}
               label="Total coupons"
-              value={totals.coupons}
+              value={rangeTotals.newCoupons}
             />
           </div>
 

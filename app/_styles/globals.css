@@ -41,3 +41,7 @@
   --toast-icon-error-primary: oklch(97.1% 0.013 17.38);
   --toast-icon-error-secondary: oklch(57.7% 0.245 27.325);
 }
+
+input[type="date"] {
+  color-scheme: dark;
+}
