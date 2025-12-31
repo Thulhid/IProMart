@@ -23,6 +23,8 @@ import HeaderWrapper from "@/app/_components/HeaderWrapper";
 import NavBar from "@/app/_components/NavBar";
 import AuthPanel from "@/app/_components/AuthPanel";
 import { FaMoneyBillWave } from "react-icons/fa6";
+import OrderStatusPieChart from "@/app/_components/OrderStatusPieChart";
+import OrdersSalesTrendChart from "@/app/_components/OrdersSalesTrendChart";
 
 const ORDER_STATUSES = [
   "Pending",
@@ -260,47 +262,38 @@ export default function AdminDashboardPage() {
             />
           </div>
 
-          <div className="mt-8 grid grid-cols-1 items-start gap-4 lg:grid-cols-[1fr_1fr_2fr]">
+          <div className="mt-8 mb-10 grid grid-cols-1 items-start gap-4 lg:grid-cols-[1.2fr_1fr_2fr]">
             {/* Orders by status */}
             <div className="rounded-2xl border border-zinc-700 bg-zinc-900 p-4">
               <h2 className="text-lg font-semibold text-zinc-200">
                 Orders by status
               </h2>
               <div className="mt-4 space-y-2">
-                {statusRows.map((row) => (
-                  <Link
-                    href={`/admin/orders?orderStatus=${row.status}&page=1`}
-                    key={row.status}
-                    className="flex cursor-pointer items-center justify-between rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 hover:border hover:border-blue-600/60"
-                  >
-                    <Tag status={row.status} />
-                    <span className="text-sm font-semibold text-zinc-200">
-                      {row.count}
-                    </span>
-                  </Link>
-                ))}
+                <OrderStatusPieChart rows={statusRows} />
               </div>
             </div>
 
             {/* Recent orders */}
-            <div className="rounded-2xl border border-zinc-700 bg-zinc-900 p-4 lg:col-span-2">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-zinc-200">
-                  Recent orders
-                </h2>
-                <Button
-                  link="/admin/orders"
-                  variant="secondary"
-                  configStyles="px-3 py-2"
-                >
-                  View all
-                </Button>
+            <div className="flex max-h-[480px] flex-col overflow-hidden rounded-2xl border border-zinc-700 bg-zinc-900 p-4 lg:col-span-2">
+              <div className="scrollbar-hide sticky top-0 z-20 bg-zinc-900 pb-3">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-zinc-200">
+                    Recent orders
+                  </h2>
+                  <Button
+                    link="/admin/orders"
+                    variant="secondary"
+                    configStyles="px-3 py-2"
+                  >
+                    View all
+                  </Button>
+                </div>
               </div>
 
               {recentOrders.length === 0 ? (
-                <p className="mt-6 text-sm text-zinc-500">No orders yet.</p>
+                <p className="mt-6 text-sm text-zinc-400">No orders yet.</p>
               ) : (
-                <div className="mt-4">
+                <div className="scrollbar-hide mt-2 flex-1 overflow-auto">
                   <Table>
                     <Table.Header
                       styles="hidden sm:grid gap-2 text-[11px] sm:text-sm uppercase font-semibold
@@ -336,14 +329,14 @@ export default function AdminDashboardPage() {
                                 ? `${o.customer.firstName} ${o.customer.lastName}`
                                 : "-"}
                             </span>
-                            <span className="text-[10px] break-words text-zinc-500 sm:text-xs">
+                            <span className="text-[10px] break-words text-zinc-400 sm:text-xs">
                               {o?.customer?.email || ""}
                             </span>
                           </div>
 
                           <div className="hidden flex-col text-zinc-300 sm:flex">
                             <span>{formatDistanceFromNow(o.createdAt)}</span>
-                            <span className="text-[10px] text-zinc-500 sm:text-xs">
+                            <span className="text-[10px] text-zinc-400 sm:text-xs">
                               {format(parseISO(o.createdAt), "MMM dd yyyy")}
                             </span>
                           </div>
@@ -371,6 +364,10 @@ export default function AdminDashboardPage() {
               )}
             </div>
           </div>
+          <OrdersSalesTrendChart
+            trend={payload?.rangeTrend ?? []}
+            range={payload?.range}
+          />
         </>
       )}
     </div>
