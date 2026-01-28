@@ -5,7 +5,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 function handleError(error) {
   console.error("Hero slide error:", error);
   throw new Error(
-    error.response?.data?.message || "Something went wrong. Please try again"
+    error.response?.data?.message || "Something went wrong. Please try again",
   );
 }
 
@@ -20,7 +20,7 @@ export async function createHeroSlide(payload) {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
     return res.data;
   } catch (error) {
@@ -46,7 +46,7 @@ export async function updateHeroSlide(id, payload) {
       payload,
       {
         withCredentials: true,
-      }
+      },
     );
     return res.data;
   } catch (error) {
@@ -61,7 +61,7 @@ export async function deleteHeroSlide(id) {
       `${API_BASE_URL}/api/v1/hero-slides/id/${id}`,
       {
         withCredentials: true,
-      }
+      },
     );
     return res.data;
   } catch (error) {

@@ -69,8 +69,7 @@ export async function deleteCategory(categoryId) {
   } catch (error) {
     console.error("Error deleting category subcategories:", error);
     throw new Error(
-      error?.response?.data?.message ||
-        "Failed to delete category",
+      error?.response?.data?.message || "Failed to delete category",
     );
   }
 }

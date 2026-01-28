@@ -6,7 +6,7 @@ const SETTING_ID = process.env.NEXT_PUBLIC_SETTING_ID;
 function handleError(error) {
   console.error("Hero slide error:", error);
   throw new Error(
-    error.response?.data?.message || "Something went wrong. Please try again"
+    error.response?.data?.message || "Something went wrong. Please try again",
   );
 }
 
@@ -29,7 +29,7 @@ export async function updateSetting(payload) {
       payload,
       {
         withCredentials: true,
-      }
+      },
     );
     return res.data;
   } catch (error) {
@@ -43,8 +43,9 @@ export async function getSetting() {
       `${API_BASE_URL}/api/v1/setting/${SETTING_ID}`,
       {
         withCredentials: true,
-      }
+      },
     );
+
     return res.data;
   } catch (error) {
     handleError(error);

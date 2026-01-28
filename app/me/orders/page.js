@@ -10,7 +10,7 @@ import { getMyOrders } from "@/app/_lib/order-service";
 import toast from "react-hot-toast";
 import Tag from "@/app/_components/Tag";
 import Spinner from "@/app/_components/Spinner";
-import { format, isToday, parseISO } from "date-fns";
+import { isToday, parseISO } from "date-fns";
 import { useRouter } from "next/navigation";
 
 export default function MyOrdersPage() {

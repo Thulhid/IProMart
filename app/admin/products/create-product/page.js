@@ -55,7 +55,7 @@ export default function CreateProductPage() {
     setLoadingSubs(true);
     try {
       const cat = await getCategoryById(newCatId);
-      setSubOptions(cat?.data?.data?.subcategories || []);
+      setSubOptions(cat?.data?.data?.Subcategories || []);
     } catch (err) {
       toast.error(err.message || "Failed to load subcategories");
     } finally {

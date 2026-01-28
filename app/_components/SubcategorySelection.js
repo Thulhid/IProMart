@@ -14,7 +14,6 @@ export default function SubcategorySelection({ isVertical = false }) {
   const pathname = usePathname();
 
   const categoryId = searchParams.get("category") ?? null;
-
   // Load subcategories when category changes
   useEffect(() => {
     (async () => {
@@ -25,7 +24,7 @@ export default function SubcategorySelection({ isVertical = false }) {
       }
       try {
         const res = await getCategoryById(categoryId);
-        const list = res?.data?.data?.subcategories ?? [];
+        const list = res?.data?.data?.data?.Subcategories ?? [];
         setSubcategories(list);
       } catch (error) {
         toast.error(error?.message || "Failed to load subcategories");

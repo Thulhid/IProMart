@@ -122,6 +122,7 @@ export default function Page() {
     (async function () {
       try {
         const res = await getSetting();
+
         setShippingFee(res.data.data.shippingFee || 0);
       } catch (err) {
         console.log(err);

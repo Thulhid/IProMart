@@ -44,6 +44,7 @@ export default function HeroSlidesPage() {
       setIsLoading(true);
       try {
         const res = await getHeroSlides();
+
         setSlides(res.data.data);
       } catch (err) {
         toast.error(err.message);
@@ -59,7 +60,6 @@ export default function HeroSlidesPage() {
       const formData = new FormData();
       formData.append("title", data.title);
       formData.append("order", data.order);
-      console.log(data.order);
       if (data.link) formData.append("link", data.link);
       if (data.image?.[0]) formData.append("image", data.image[0]);
 

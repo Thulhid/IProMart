@@ -26,8 +26,10 @@ export default async function Page({ searchParams }) {
   const {
     data: { data: SlideArray },
   } = await getHeroSlides();
-
-  const orderedSlides = SlideArray.slice().sort((a, b) => a.order - b.order);
+  const orderedSlides =
+    SlideArray.length !== 0
+      ? SlideArray.slice().sort((a, b) => a.order - b.order)
+      : [];
 
   return (
     <div className="mt-25 w-full">
@@ -40,14 +42,14 @@ export default async function Page({ searchParams }) {
           </div>
         }
       />
-
-      <Slider
-        slides={orderedSlides}
-        autoSlide
-        containerStyles="pb-15"
-        autoSlideInterval={4000}
-      />
-
+      {orderedSlides.length > 0 && (
+        <Slider
+          slides={orderedSlides}
+          autoSlide
+          containerStyles="pb-15"
+          autoSlideInterval={4000}
+        />
+      )}
       <Suspense key={JSON.stringify(params)} fallback={<Loading />}>
         <ProductsAndPagination searchParams={params} />
         <BottomNavigationBar categories={resCategories.data.data} />

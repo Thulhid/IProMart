@@ -90,12 +90,16 @@ export default function CouponsPage() {
     }
   };
 
+
+
+
   const handleEdit = (coupon) => {
     setEditingId(coupon._id);
     setValue("code", coupon.code || "");
     setValue("minSubtotal", coupon.minSubtotal ?? 0);
     setValue("discountAmount", coupon.discountAmount ?? 0);
     setValue("isActive", coupon.isActive ?? true);
+  
   };
 
   const handleDelete = async (id) => {
