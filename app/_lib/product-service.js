@@ -47,10 +47,13 @@ export async function filterProducts(
   }
 }
 
-export async function getProductBySlug(slug) {
+export async function getProductBySlug(slug, promo) {
   try {
     const response = await axios.get(
       `${API_BASE_URL}/api/v1/products/slug/${slug}`,
+      {
+        params: promo ? { promo } : {},
+      },
     );
     return response.data;
   } catch (error) {

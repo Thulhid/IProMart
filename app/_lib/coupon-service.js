@@ -60,6 +60,7 @@ export async function updateCoupon(id, payload) {
 }
 
 export async function createCoupon(payload) {
+  console.log(payload);
   try {
     return await axios.post(`${API_BASE_URL}/api/v1/coupons`, payload, {
       withCredentials: true,

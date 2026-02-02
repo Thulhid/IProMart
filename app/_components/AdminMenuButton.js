@@ -98,6 +98,16 @@ export default function AdminMenuButton({ userRole }) {
                   Manage Coupons
                 </Link>
               </li>
+              {dbUser === "admin" && (
+                <li>
+                  <Link
+                    href="/admin/promo-links"
+                    className="block px-4 py-2 transition-colors duration-200 hover:bg-zinc-300 hover:text-blue-600 active:bg-zinc-300 active:text-blue-600"
+                  >
+                    Manage Promo Links
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link
                   href="/admin/repair-requests"

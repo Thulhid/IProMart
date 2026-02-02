@@ -355,4 +355,26 @@ export const couponSchema = yup.object({
   minSubtotal: num("Min subtotal"),
   discountAmount: num("Discount amount"),
   isActive: yup.boolean().default(true),
+
+  // ✅ v1
+  expiresAt: yup.string().nullable(),
+
+  // ✅ NEW
+  startsAt: yup
+    .string()
+    .nullable()
+    .transform((v) => (v === "" ? null : v)),
+  endsAt: yup
+    .string()
+    .nullable()
+    .transform((v) => (v === "" ? null : v))
+    .test(
+      "after-start",
+      "End date must be after start date",
+      function (endsAt) {
+        const { startsAt } = this.parent;
+        if (!startsAt || !endsAt) return true;
+        return new Date(endsAt) >= new Date(startsAt);
+      },
+    ),
 });

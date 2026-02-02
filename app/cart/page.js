@@ -64,6 +64,14 @@ export default function Page() {
           });
           return;
         }
+        if (reason === "EXPIRED") {
+          toast.error("This coupon is expired", { id: toastId });
+          return;
+        }
+        if (reason === "INACTIVE") {
+          toast.error("This coupon is disabled", { id: toastId });
+          return;
+        }
         if (reason === "NOT_FOUND") {
           toast.error("Invalid coupon code", { id: toastId });
           return;

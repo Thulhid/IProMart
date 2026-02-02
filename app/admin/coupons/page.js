@@ -28,6 +28,13 @@ export default function CouponsPage() {
   const [editingId, setEditingId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const toDTLocal = (iso) => {
+    if (!iso) return "";
+    const d = new Date(iso);
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+
   const {
     register,
     handleSubmit,
@@ -43,6 +50,7 @@ export default function CouponsPage() {
       minSubtotal: 0,
       discountAmount: 0,
       isActive: true,
+      expiresAt: "",
     },
   });
 
@@ -71,6 +79,9 @@ export default function CouponsPage() {
       minSubtotal: Number(data.minSubtotal),
       discountAmount: Number(data.discountAmount),
       isActive: Boolean(data.isActive),
+
+      // ✅ v1
+      expiresAt: data.expiresAt ? new Date(data.expiresAt).toISOString() : null,
     };
 
     try {
@@ -83,15 +94,18 @@ export default function CouponsPage() {
       }
 
       await fetchCoupons();
-      reset({ code: "", minSubtotal: 0, discountAmount: 0, isActive: true });
+      reset({
+        code: "",
+        minSubtotal: 0,
+        discountAmount: 0,
+        isActive: true,
+        expiresAt: "",
+      });
       setEditingId(null);
     } catch (err) {
       toast.error(err.message);
     }
   };
-
-
-
 
   const handleEdit = (coupon) => {
     setEditingId(coupon._id);
@@ -99,7 +113,7 @@ export default function CouponsPage() {
     setValue("minSubtotal", coupon.minSubtotal ?? 0);
     setValue("discountAmount", coupon.discountAmount ?? 0);
     setValue("isActive", coupon.isActive ?? true);
-  
+    setValue("expiresAt", toDTLocal(coupon.expiresAt));
   };
 
   const handleDelete = async (id) => {
@@ -135,6 +149,7 @@ export default function CouponsPage() {
               minSubtotal: 0,
               discountAmount: 0,
               isActive: true,
+              expiresAt: "",
             });
           }}
           variant="primary"
@@ -201,6 +216,17 @@ export default function CouponsPage() {
                   </p>
                 </div>
 
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm text-zinc-400">
+                    Expires At (optional)
+                  </label>
+                  <input
+                    type="date"
+                    {...register("expiresAt")}
+                    className="input"
+                  />
+                </div>
+
                 {/* isActive */}
                 <div className="col-span-full flex items-center gap-3">
                   <input
@@ -244,6 +270,12 @@ export default function CouponsPage() {
                     </p>
                     <p className="text-sm text-zinc-400">
                       Discount: -{formatCurrency(c.discountAmount)}
+                    </p>
+                    <p className="text-sm text-zinc-400">
+                      Expires:{" "}
+                      {c.expiresAt
+                        ? new Date(c.expiresAt).toLocaleString()
+                        : "Never"}
                     </p>
                     <p className="text-sm text-zinc-500">
                       Status:{" "}
