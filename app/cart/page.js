@@ -21,12 +21,15 @@ import toast from "react-hot-toast";
 import PayHereButton from "@/app/_components/PayHereButton";
 import { getSetting } from "@/app/_lib/setting-service";
 import { quoteCoupon } from "@/app/_lib/coupon-service";
+import { getMyPoints } from "@/app/_lib/points-service";
+import PointsRedeemer from "@/app/_components/PointsRedeemer";
 
 export default function Page() {
   const [cart, setCart] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [shippingFee, setShippingFee] = useState(0);
+  const [settings, setSettings] = useState(null);
   const [includingShipping, setIncludingShipping] = useState(true);
 
   // ✅ Coupon states (NEW)
@@ -34,6 +37,8 @@ export default function Page() {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+  const [pointsInfo, setPointsInfo] = useState(null);
+  const [redeemPoints, setRedeemPoints] = useState(0);
 
   function clearCouponSilently() {
     if (appliedCoupon || discountAmount > 0) {
@@ -93,38 +98,79 @@ export default function Page() {
   useEffect(() => {
     (async function () {
       setIsLoading(true);
+      const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
+      let loggedIn = false;
       try {
-        const resCustomer = await getCustomer(); // returns customer data or throws
-        if (!resCustomer) throw new Error("Customer not logged in");
-        setIsLoggedIn(true);
-        const guestCart = JSON.parse(localStorage.getItem("guestCart")) || [];
-        for (const product of guestCart) {
-          await createOrUpdateCart(product._id, product.quantity);
+        const resCustomer = await getCustomer();
+        if (!resCustomer) {
+          setIsLoggedIn(false);
+          setCart(guestCart);
+          setIsLoading(false);
+          return;
         }
-        localStorage.removeItem("guestCart");
-        const cartRes = await getCustomerCart();
-        const cartItems = cartRes.cart?.cartItems || [];
-        const normalized = cartItems.map((item) => ({
-          _id: item.product._id,
-          name: item.product.name,
-          price: item.product.price,
-          finalPrice: item.product.finalPrice,
-          priceDiscount: item.product.priceDiscount || 0,
-          imageCover: item.product.imageCover,
-          slug: item.product.slug,
-          category: item.product.category,
-          quantity: item.quantity,
-        }));
-        setCart(normalized);
+        loggedIn = true;
+        setIsLoggedIn(true);
       } catch (err) {
-        //  localStorage.setItem("guestCart", JSON.stringify(guestCart));
-        const guest = JSON.parse(localStorage.getItem("guestCart")) || [];
-        setCart(guest);
-      } finally {
+        setIsLoggedIn(false);
+        setCart(guestCart);
         setIsLoading(false);
+        return;
       }
+
+      if (loggedIn) {
+        try {
+          for (const product of guestCart) {
+            await createOrUpdateCart(product._id, product.quantity);
+          }
+          localStorage.removeItem("guestCart");
+        } catch (err) {
+          toast.error(err.message || "Failed to sync cart");
+        }
+
+        try {
+          const cartRes = await getCustomerCart();
+          const cartItems = cartRes.cart?.cartItems || [];
+          const normalized = cartItems.map((item) => ({
+            _id: item.product._id,
+            name: item.product.name,
+            price: item.product.price,
+            finalPrice: item.product.finalPrice,
+            priceDiscount: item.product.priceDiscount || 0,
+            imageCover: item.product.imageCover,
+            slug: item.product.slug,
+            category: item.product.category,
+            quantity: item.quantity,
+            availability: item.product.availability,
+          }));
+          setCart(normalized);
+        } catch (err) {
+          toast.error(err.message || "Failed to load cart");
+          setCart(guestCart);
+        }
+      }
+
+      setIsLoading(false);
     })();
   }, []);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      setPointsInfo(null);
+      setRedeemPoints(0);
+      return;
+    }
+
+    (async function () {
+      try {
+        const p = await getMyPoints();
+        setPointsInfo(p);
+      } catch (err) {
+        toast.error(err.message || "Failed to load points info");
+        setPointsInfo(null);
+        setRedeemPoints(0);
+      }
+    })();
+  }, [isLoggedIn]);
 
   useEffect(() => {
     (async function () {
@@ -132,6 +178,7 @@ export default function Page() {
         const res = await getSetting();
 
         setShippingFee(res.data.data.shippingFee || 0);
+        setSettings(res.data.data || null);
       } catch (err) {
         console.log(err);
         toast.error("Failed to load shipping settings");
@@ -197,8 +244,32 @@ export default function Page() {
 
   const baseTotal = includingShipping ? itemsTotal + shippingFee : itemsTotal;
 
-  // NEW: apply discount (display-side)
-  const total = Math.max(0, baseTotal - (discountAmount || 0));
+  const pointsSettings = pointsInfo?.settings || settings || {};
+  const pointValueRs = Number(pointsSettings.pointValueRs ?? 1);
+  const maxRedeemPercent = Number(pointsSettings.maxRedeemPercent ?? 0);
+  const pointsEnabled = Boolean(pointsSettings.pointsEnabled);
+
+  const redeemBase = Math.max(0, itemsTotal - (discountAmount || 0));
+  const maxDiscountByPercent = pointsEnabled
+    ? (redeemBase * maxRedeemPercent) / 100
+    : 0;
+  const maxPointsByPercent =
+    pointsEnabled && pointValueRs > 0
+      ? Math.floor(maxDiscountByPercent / pointValueRs)
+      : 0;
+
+  const balancePoints = Number(pointsInfo?.balancePoints ?? 0);
+  const maxPointsThisOrder = Math.max(
+    0,
+    Math.min(balancePoints, maxPointsByPercent),
+  );
+  const pointsToUse = Math.max(0, Math.min(redeemPoints, maxPointsThisOrder));
+  const pointsDiscountAmount = pointsToUse * pointValueRs;
+
+  const total = Math.max(
+    0,
+    baseTotal - (discountAmount || 0) - (pointsDiscountAmount || 0),
+  );
 
   return (
     <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 md:px-10">
@@ -303,6 +374,24 @@ export default function Page() {
               </div>
             )}
 
+            <PointsRedeemer
+              isLoggedIn={isLoggedIn}
+              pointsInfo={pointsInfo}
+              pointsSettings={pointsSettings}
+              subtotalAmount={itemsTotal}
+              couponDiscountAmount={discountAmount}
+              appliedCouponCode={appliedCoupon}
+              redeemPoints={redeemPoints}
+              onChangeRedeemPoints={(v) => {
+                const allow = Boolean(pointsSettings.allowPointsWithCoupon);
+                if (!allow && appliedCoupon && v > 0) {
+                  clearCouponSilently();
+                  toast("Coupon removed because points are used");
+                }
+                setRedeemPoints(v);
+              }}
+            />
+
             {!includingShipping && (
               <p className="flex items-start gap-2 text-sm text-yellow-400">
                 <HiOutlineInformationCircle className="mt-0.5" size={22} />
@@ -319,6 +408,13 @@ export default function Page() {
               </div>
             )}
 
+            {pointsDiscountAmount > 0 && (
+              <div className="flex justify-between text-base font-medium">
+                <span>Points Discount:</span>
+                <span>- {formatCurrency(pointsDiscountAmount)}</span>
+              </div>
+            )}
+
             <div className="my-5 flex justify-between text-base font-medium sm:text-lg">
               <span>Total Price:</span>
               <span>{formatCurrency(total)}</span>
@@ -330,6 +426,7 @@ export default function Page() {
               isLoading={isLoading}
               includingShipping={includingShipping}
               couponCode={appliedCoupon}
+              redeemPoints={pointsToUse}
               variant="buy"
             >
               Checkout

@@ -3,10 +3,19 @@ import BackButton from "@/app/_components/BackButton";
 import Button from "@/app/_components/Button";
 import ContainerBox from "@/app/_components/ContainerBox";
 import { HiOutlineChevronLeft, HiXCircle } from "react-icons/hi2";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { cancelPay } from "@/app/_lib/payhere-service";
 
 export default function PaymentCancelPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get("orderId");
+
+  useEffect(() => {
+    if (!orderId) return;
+    cancelPay(orderId);
+  }, [orderId]);
 
   return (
     <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-[1440px]">
@@ -33,6 +42,12 @@ export default function PaymentCancelPage() {
             <p className="text-sm text-zinc-400">
               You cancelled the payment. No money was deducted.
             </p>
+
+            {orderId && (
+              <p className="mt-2 text-xs text-zinc-400">
+                Order ID: <span className="text-zinc-200">{orderId}</span>
+              </p>
+            )}
 
             <div className="mt-6 flex flex-col justify-center gap-4 sm:flex-row">
               <Button

@@ -31,7 +31,15 @@ export default function SettingsPage() {
     const fetchSetting = async () => {
       try {
         const res = await getSetting();
-        setValue("shippingFee", res.data.data.shippingFee);
+        setValue("shippingFee", res.data.data.shippingFee || 0);
+        setValue("pointsEnabled", Boolean(res.data.data.pointsEnabled));
+        setValue("pointValueRs", res.data.data.pointValueRs ?? 1);
+        setValue("maxRedeemPercent", res.data.data.maxRedeemPercent ?? 0);
+        setValue("minRedeemPoints", res.data.data.minRedeemPoints ?? 0);
+        setValue(
+          "allowPointsWithCoupon",
+          Boolean(res.data.data.allowPointsWithCoupon),
+        );
       } catch (err) {
         toast.error("Failed to load settings");
       } finally {
@@ -85,6 +93,75 @@ export default function SettingsPage() {
               <p className="text-sm text-red-400">
                 {errors.shippingFee?.message}
               </p>
+            </div>
+
+            <div className="mt-8 space-y-4 border-t border-zinc-700 pt-6">
+              <h2 className="text-lg font-semibold text-zinc-200">
+                Loyalty Points
+              </h2>
+
+              <label className="flex items-center gap-3 text-sm text-zinc-200">
+                <input
+                  type="checkbox"
+                  {...register("pointsEnabled")}
+                  className="h-4 w-4 accent-blue-600"
+                />
+                Enable Points
+              </label>
+
+              <div className="space-y-2">
+                <label className="font-medium text-zinc-100">
+                  1 Point value (Rs.)
+                </label>
+                <input
+                  type="number"
+                  step="1"
+                  {...register("pointValueRs")}
+                  className="input"
+                />
+                <p className="text-sm text-red-400">
+                  {errors.pointValueRs?.message}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="font-medium text-zinc-100">
+                  Max redeem % (per order)
+                </label>
+                <input
+                  type="number"
+                  step="1"
+                  {...register("maxRedeemPercent")}
+                  className="input"
+                />
+                <p className="text-sm text-red-400">
+                  {errors.maxRedeemPercent?.message}
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="font-medium text-zinc-100">
+                  Min points to redeem
+                </label>
+                <input
+                  type="number"
+                  step="1"
+                  {...register("minRedeemPoints")}
+                  className="input"
+                />
+                <p className="text-sm text-red-400">
+                  {errors.minRedeemPoints?.message}
+                </p>
+              </div>
+
+              <label className="flex items-center gap-3 text-sm text-zinc-200">
+                <input
+                  type="checkbox"
+                  {...register("allowPointsWithCoupon")}
+                  className="h-4 w-4 accent-blue-600"
+                />
+                Allow stacking points with coupon
+              </label>
             </div>
 
             <Button

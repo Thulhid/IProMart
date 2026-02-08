@@ -129,6 +129,9 @@ export default function Page() {
                 <Button variant="primary" link="/me/orders">
                   My Orders
                 </Button>
+                <Button variant="secondary" link="/me/wallet">
+                  My Wallet
+                </Button>
                 <Button variant="secondary" link="/me/update-me">
                   Edit Profile
                 </Button>

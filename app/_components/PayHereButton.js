@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { redirect, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { createPay } from "@/app/_lib/payhere-service";
+import { cancelPay, createPay } from "@/app/_lib/payhere-service";
 import Button from "@/app/_components/Button";
 import { getCustomer } from "@/app/_lib/customer-service";
 
@@ -17,10 +17,12 @@ export default function PayHereButton({
   configStyles,
   quantity,
   couponCode,
+  redeemPoints = 0,
 }) {
   const router = useRouter();
   const [isPayHereReady, setIsPayHereReady] = useState(false);
   const [customer, setCustomer] = useState(null);
+  const [sessionOrderId, setSessionOrderId] = useState(null);
 
   useEffect(() => {
     const script = document.createElement("script");
@@ -67,26 +69,38 @@ export default function PayHereButton({
           quantity,
         },
         couponCode,
+        redeemPoints,
       );
       const payhereParams = res.payhereParams;
+      const orderIdFromSession = payhereParams?.order_id;
+      setSessionOrderId(orderIdFromSession || null);
 
       window.payhere.onCompleted = function (orderId) {
-        toast.success("Payment successful!");
-        router.push("/payment/success");
+        const oid = orderId || orderIdFromSession;
+        toast.success("Payment completed! We are confirming...");
+        router.push(
+          `/payment/success?orderId=${encodeURIComponent(oid || "")}`,
+        );
       };
 
-      window.payhere.onDismissed = function () {
+      window.payhere.onDismissed = async function () {
+        const oid = orderIdFromSession;
         toast.error("Payment dismissed");
+        if (oid) await cancelPay(oid);
+        router.push(`/payment/cancel?orderId=${encodeURIComponent(oid || "")}`);
       };
 
-      window.payhere.onError = function (error) {
+      window.payhere.onError = async function (error) {
+        const oid = orderIdFromSession;
         toast.error("Payment failed: " + error);
-        router.push("/payment/cancel");
+        if (oid) await cancelPay(oid);
+        router.push(`/payment/cancel?orderId=${encodeURIComponent(oid || "")}`);
       };
 
       window.payhere.startPayment(payhereParams);
     } catch (error) {
       toast.error("Failed to initialize payment");
+      if (sessionOrderId) await cancelPay(sessionOrderId);
     }
   };
 

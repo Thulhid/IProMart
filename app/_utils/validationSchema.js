@@ -274,6 +274,29 @@ export const settingSchema = yup.object().shape({
     .typeError("Shipping fee must be a number")
     .required("Shipping fee is required")
     .min(0, "Shipping fee must be at least 0"),
+
+  pointsEnabled: yup.boolean().optional(),
+
+  pointValueRs: yup
+    .number()
+    .typeError("Point value must be a number")
+    .min(1, "Point value must be at least 1")
+    .optional(),
+
+  maxRedeemPercent: yup
+    .number()
+    .typeError("Max redeem percent must be a number")
+    .min(0, "Must be at least 0")
+    .max(100, "Must be 100 or less")
+    .optional(),
+
+  minRedeemPoints: yup
+    .number()
+    .typeError("Min redeem points must be a number")
+    .min(0, "Must be at least 0")
+    .optional(),
+
+  allowPointsWithCoupon: yup.boolean().optional(),
 });
 
 export const employeeUpdateSchema = yup.object().shape({

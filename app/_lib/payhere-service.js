@@ -7,6 +7,7 @@ export async function createPay(
   includingShipping,
   itemObj,
   couponCode,
+  redeemPoints,
 ) {
   try {
     const response = await axios.post(
@@ -17,6 +18,7 @@ export async function createPay(
         includingShipping,
         itemObj,
         couponCode,
+        redeemPoints,
       },
       { withCredentials: true },
     );
@@ -26,6 +28,20 @@ export async function createPay(
     throw new Error(
       error.response?.data?.message || "Something went wrong. Please try again",
     );
+  }
+}
+
+export async function cancelPay(orderId) {
+  try {
+    const { data } = await axios.post(
+      `${API_BASE_URL}/api/v1/payhere/cancel`,
+      { orderId },
+      { withCredentials: true },
+    );
+    return data;
+  } catch (error) {
+    console.error("cancelPay error:", error);
+    return null;
   }
 }
 

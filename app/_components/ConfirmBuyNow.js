@@ -8,15 +8,20 @@ import PayHereButton from "@/app/_components/PayHereButton";
 import Button from "@/app/_components/Button";
 import toast from "react-hot-toast";
 import { quoteItemCoupon } from "@/app/_lib/coupon-service";
+import { getMyPoints } from "@/app/_lib/points-service";
+import PointsRedeemer from "@/app/_components/PointsRedeemer";
 
 function ConfirmBuyNow({ product, currentQuantity }) {
   const [shippingFee, setShippingFee] = useState(null);
+  const [settings, setSettings] = useState(null);
   const [includingShipping, setIncludingShipping] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [couponInput, setCouponInput] = useState("");
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [discountAmount, setDiscountAmount] = useState(0);
+  const [pointsInfo, setPointsInfo] = useState(null);
+  const [redeemPoints, setRedeemPoints] = useState(0);
 
   function removeCoupon() {
     setAppliedCoupon(null);
@@ -76,6 +81,7 @@ function ConfirmBuyNow({ product, currentQuantity }) {
       try {
         const res = await getSetting();
         setShippingFee(res.data.data.shippingFee);
+        setSettings(res.data.data || null);
       } catch (err) {
         toast.error(err.message);
       } finally {
@@ -84,11 +90,52 @@ function ConfirmBuyNow({ product, currentQuantity }) {
     })();
   }, []);
 
+  useEffect(() => {
+    (async function () {
+      try {
+        const p = await getMyPoints();
+        setPointsInfo(p);
+      } catch (err) {
+        toast.error(err.message || "Failed to load points info");
+        setPointsInfo(null);
+        setRedeemPoints(0);
+      }
+    })();
+  }, []);
+
   const baseTotal = includingShipping
     ? product.finalPrice * currentQuantity + shippingFee
     : product.finalPrice * currentQuantity;
 
-  const total = Math.max(0, baseTotal - (discountAmount || 0));
+  const pointsSettings = pointsInfo?.settings || settings || {};
+  const pointValueRs = Number(pointsSettings.pointValueRs ?? 1);
+  const maxRedeemPercent = Number(pointsSettings.maxRedeemPercent ?? 0);
+  const pointsEnabled = Boolean(pointsSettings.pointsEnabled);
+  const balancePoints = Number(pointsInfo?.balancePoints ?? 0);
+
+  const redeemBase = Math.max(
+    0,
+    product.finalPrice * currentQuantity - (discountAmount || 0),
+  );
+  const maxDiscountByPercent = pointsEnabled
+    ? (redeemBase * maxRedeemPercent) / 100
+    : 0;
+  const maxPointsByPercent =
+    pointsEnabled && pointValueRs > 0
+      ? Math.floor(maxDiscountByPercent / pointValueRs)
+      : 0;
+
+  const maxPointsThisOrder = Math.max(
+    0,
+    Math.min(balancePoints, maxPointsByPercent),
+  );
+  const pointsToUse = Math.max(0, Math.min(redeemPoints, maxPointsThisOrder));
+  const pointsDiscountAmount = pointsToUse * pointValueRs;
+
+  const total = Math.max(
+    0,
+    baseTotal - (discountAmount || 0) - (pointsDiscountAmount || 0),
+  );
 
   return (
     <div className="w-full max-w-md space-y-4 bg-zinc-900 px-6 py-5">
@@ -149,6 +196,24 @@ function ConfirmBuyNow({ product, currentQuantity }) {
         </div>
       )}
 
+      <PointsRedeemer
+        isLoggedIn={true}
+        pointsInfo={pointsInfo}
+        pointsSettings={pointsSettings}
+        subtotalAmount={product.finalPrice * currentQuantity}
+        couponDiscountAmount={discountAmount}
+        appliedCouponCode={appliedCoupon}
+        redeemPoints={redeemPoints}
+        onChangeRedeemPoints={(v) => {
+          const allow = Boolean(pointsSettings.allowPointsWithCoupon);
+          if (!allow && appliedCoupon && v > 0) {
+            removeCoupon();
+            toast("Coupon removed because points are used");
+          }
+          setRedeemPoints(v);
+        }}
+      />
+
       {!includingShipping && (
         <div className="flex items-start gap-2 rounded-lg border border-yellow-600 bg-yellow-500/10 p-3 text-sm text-yellow-400">
           <HiOutlineInformationCircle
@@ -169,6 +234,7 @@ function ConfirmBuyNow({ product, currentQuantity }) {
         quantity={currentQuantity}
         configStyles="ml-auto !text-base"
         couponCode={appliedCoupon}
+        redeemPoints={pointsToUse}
       >
         Confirm
       </PayHereButton>

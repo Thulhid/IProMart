@@ -6,6 +6,7 @@ import {
   ComposedChart,
   Area,
   Line,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -44,31 +45,45 @@ function buildFullSeries(trend, range) {
   return out;
 }
 
-function CustomTooltip({ active, payload, label }) {
+function RevenueTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null;
-
-  const sales = payload.find((p) => p.dataKey === "sales")?.value ?? 0;
-  const orders = payload.find((p) => p.dataKey === "orders")?.value ?? 0;
-
+  const sales = payload[0]?.value ?? 0;
   return (
     <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 shadow-md">
       <p className="text-xs font-semibold text-zinc-200">
         {label ? format(parseISO(label), "MMM dd, yyyy") : ""}
       </p>
-      <div className="mt-1 space-y-1 text-xs text-zinc-400">
-        <p>
-          <span className="font-semibold text-zinc-200">
-            {formatCurrency(sales)}
-          </span>{" "}
-          sales
-        </p>
-        <p>
-          <span className="font-semibold text-zinc-200">{orders}</span> orders
-        </p>
-      </div>
+      <p className="mt-1 text-xs text-zinc-400">
+        <span className="font-semibold text-zinc-200">
+          {formatCurrency(sales)}
+        </span>{" "}
+        revenue
+      </p>
     </div>
   );
 }
+
+function OrdersTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null;
+  const orders = payload[0]?.value ?? 0;
+  return (
+    <div className="rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-2 shadow-md">
+      <p className="text-xs font-semibold text-zinc-200">
+        {label ? format(parseISO(label), "MMM dd, yyyy") : ""}
+      </p>
+      <p className="mt-1 text-xs text-zinc-400">
+        <span className="font-semibold text-zinc-200">{orders}</span> orders
+      </p>
+    </div>
+  );
+}
+
+const formatAxisCurrency = (v) =>
+  Math.abs(v) >= 1_000_000
+    ? `${(v / 1_000_000).toFixed(1)}M`
+    : Math.abs(v) >= 1_000
+      ? `${(v / 1_000).toFixed(0)}k`
+      : `${Math.round(v)}`;
 
 export default function OrdersSalesTrendChart({ trend, range }) {
   const data = useMemo(() => buildFullSeries(trend, range), [trend, range]);
@@ -81,9 +96,7 @@ export default function OrdersSalesTrendChart({ trend, range }) {
   if (!hasAny) {
     return (
       <div className="mt-6 rounded-2xl border border-zinc-700 bg-zinc-900 p-4">
-        <h2 className="text-lg font-semibold text-zinc-200">
-          Sales & Orders Trend
-        </h2>
+        <h2 className="text-lg font-semibold text-zinc-200">Performance</h2>
         <p className="mt-3 text-center text-xs text-zinc-400">
           No activity to display for the selected range.
         </p>
@@ -92,94 +105,129 @@ export default function OrdersSalesTrendChart({ trend, range }) {
   }
 
   return (
-    <div className="mt-6 rounded-2xl border border-zinc-700 bg-zinc-900 p-4">
-      <div className="flex items-end justify-between">
-        <div>
-          <h2 className="text-lg font-semibold text-zinc-200">
-            Sales & Orders Trend
-          </h2>
-          <p className="mt-1 text-xs text-zinc-400">
-            Daily totals (selected range)
-          </p>
+    <div className="mt-6 grid gap-4 lg:grid-cols-2">
+      {/* Revenue */}
+      <div className="rounded-2xl border border-zinc-700 bg-zinc-900 p-4">
+        <div className="flex items-end justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-zinc-200">
+              Revenue Trend
+            </h2>
+            <p className="mt-1 text-xs text-zinc-400">Daily revenue</p>
+          </div>
+        </div>
+        <div className="mt-4 h-[260px] w-full sm:h-[320px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart
+              data={data}
+              margin={{ top: 20, right: 12, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid stroke="#27272a" strokeDasharray="3 3" />
+              <XAxis
+                dataKey="date"
+                tickFormatter={(v) => format(parseISO(v), "MMM d")}
+                tick={{ fill: "#a1a1aa", fontSize: 12 }}
+                axisLine={{ stroke: "#3f3f46" }}
+                tickLine={{ stroke: "#3f3f46" }}
+                minTickGap={18}
+              />
+              <YAxis
+                tickFormatter={formatAxisCurrency}
+                tick={{ fill: "#a1a1aa", fontSize: 12 }}
+                axisLine={{ stroke: "#3f3f46" }}
+                tickLine={{ stroke: "#3f3f46" }}
+                width={46}
+              />
+              <Tooltip content={<RevenueTooltip />} />
+              <Legend
+                verticalAlign="top"
+                align="right"
+                wrapperStyle={{ paddingBottom: 8 }}
+                iconType="circle"
+                formatter={(value) => (
+                  <span className="text-xs font-medium text-zinc-300">
+                    {value}
+                  </span>
+                )}
+              />
+              <Area
+                type="monotone"
+                dataKey="sales"
+                stroke="#2563eb"
+                fill="#2563eb"
+                fillOpacity={0.2}
+                strokeWidth={2}
+                dot={false}
+                name="Revenue"
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
-      <div className="mt-4 h-[280px] w-full sm:h-[340px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart
-            data={data}
-            margin={{ top: 26, right: 18, left: 0, bottom: 0 }}
-          >
-            <CartesianGrid stroke="#27272a" strokeDasharray="3 3" />
-            <XAxis
-              dataKey="date"
-              tickFormatter={(v) => format(parseISO(v), "MMM d")}
-              tick={{ fill: "#a1a1aa", fontSize: 12 }}
-              axisLine={{ stroke: "#3f3f46" }}
-              tickLine={{ stroke: "#3f3f46" }}
-              minTickGap={18}
-            />
-
-            {/* Sales axis (left) */}
-            <YAxis
-              yAxisId="sales"
-              tickFormatter={(v) => (v ? `${Math.round(v)}` : "0")}
-              tick={{ fill: "#a1a1aa", fontSize: 12 }}
-              axisLine={{ stroke: "#3f3f46" }}
-              tickLine={{ stroke: "#3f3f46" }}
-              width={50}
-            />
-
-            {/* Orders axis (right) */}
-            <YAxis
-              yAxisId="orders"
-              orientation="right"
-              tick={{ fill: "#a1a1aa", fontSize: 12 }}
-              axisLine={{ stroke: "#3f3f46" }}
-              tickLine={{ stroke: "#3f3f46" }}
-              width={40}
-            />
-
-            <Tooltip content={<CustomTooltip />} />
-
-            <Legend
-              verticalAlign="top"
-              align="right"
-              wrapperStyle={{ paddingBottom: 12 }}
-              iconType="circle"
-              formatter={(value) => (
-                <span className="text-xs font-medium text-zinc-300">
-                  {value}
-                </span>
-              )}
-            />
-
-            {/* Sales (blue-700) */}
-            <Area
-              yAxisId="sales"
-              type="monotone"
-              dataKey="sales"
-              stroke="#1d4ed8"
-              fill="#1d4ed8"
-              fillOpacity={0.18}
-              strokeWidth={2}
-              dot={false}
-              name="Sales"
-            />
-
-            {/* Orders (zinc-200-ish line) */}
-            <Line
-              yAxisId="orders"
-              type="monotone"
-              dataKey="orders"
-              stroke="#a1a1aa"
-              strokeWidth={1.5}
-              strokeDasharray="6 4"
-              dot={false}
-              name="Orders"
-            />
-          </ComposedChart>
-        </ResponsiveContainer>
+      {/* Orders */}
+      <div className="rounded-2xl border border-zinc-700 bg-zinc-900 p-4">
+        <div className="flex items-end justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-zinc-200">
+              Orders Trend
+            </h2>
+            <p className="mt-1 text-xs text-zinc-400">Daily order count</p>
+          </div>
+        </div>
+        <div className="mt-4 h-[260px] w-full sm:h-[320px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart
+              data={data}
+              margin={{ top: 20, right: 12, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid stroke="#27272a" strokeDasharray="3 3" />
+              <XAxis
+                dataKey="date"
+                tickFormatter={(v) => format(parseISO(v), "MMM d")}
+                tick={{ fill: "#a1a1aa", fontSize: 12 }}
+                axisLine={{ stroke: "#3f3f46" }}
+                tickLine={{ stroke: "#3f3f46" }}
+                minTickGap={18}
+              />
+              <YAxis
+                tickFormatter={(v) => `${Math.round(v)}`}
+                tick={{ fill: "#a1a1aa", fontSize: 12 }}
+                axisLine={{ stroke: "#3f3f46" }}
+                tickLine={{ stroke: "#3f3f46" }}
+                width={40}
+                allowDecimals={false}
+              />
+              <Tooltip content={<OrdersTooltip />} />
+              <Legend
+                verticalAlign="top"
+                align="right"
+                wrapperStyle={{ paddingBottom: 8 }}
+                iconType="circle"
+                formatter={(value) => (
+                  <span className="text-xs font-medium text-zinc-300">
+                    {value}
+                  </span>
+                )}
+              />
+              <Bar
+                dataKey="orders"
+                name="Orders"
+                fill="#a1a1aa"
+                radius={[6, 6, 0, 0]}
+                barSize={16}
+              />
+              <Line
+                type="monotone"
+                dataKey="orders"
+                stroke="#e5e7eb"
+                strokeWidth={1.8}
+                dot={false}
+                name="Orders trend"
+              />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );

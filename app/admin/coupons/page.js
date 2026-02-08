@@ -3,16 +3,15 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import toast from "react-hot-toast";
-import {
-  HiMiniXMark,
-  HiOutlineChevronLeft,
-  HiPencilSquare,
-} from "react-icons/hi2";
+import { HiOutlineChevronLeft } from "react-icons/hi2";
+import { endOfDay, format, parseISO } from "date-fns";
 import BackButton from "@/app/_components/BackButton";
 import Button from "@/app/_components/Button";
 import ContainerBox from "@/app/_components/ContainerBox";
+import CouponRow from "@/app/_components/CouponRow";
+import Empty from "@/app/_components/Empty";
 import Spinner from "@/app/_components/Spinner";
-
+import Table from "@/app/_components/Table";
 import { useEffect, useState } from "react";
 import { couponSchema } from "@/app/_utils/validationSchema";
 import {
@@ -21,18 +20,15 @@ import {
   getCoupons,
   updateCoupon,
 } from "@/app/_lib/coupon-service";
-import { formatCurrency } from "@/app/_utils/helper";
 
 export default function CouponsPage() {
   const [coupons, setCoupons] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const toDTLocal = (iso) => {
+  const toDateInput = (iso) => {
     if (!iso) return "";
-    const d = new Date(iso);
-    const pad = (n) => String(n).padStart(2, "0");
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    return format(parseISO(iso), "yyyy-MM-dd");
   };
 
   const {
@@ -80,8 +76,9 @@ export default function CouponsPage() {
       discountAmount: Number(data.discountAmount),
       isActive: Boolean(data.isActive),
 
-      // ✅ v1
-      expiresAt: data.expiresAt ? new Date(data.expiresAt).toISOString() : null,
+      expiresAt: data.expiresAt
+        ? endOfDay(new Date(data.expiresAt)).toISOString()
+        : null,
     };
 
     try {
@@ -113,7 +110,7 @@ export default function CouponsPage() {
     setValue("minSubtotal", coupon.minSubtotal ?? 0);
     setValue("discountAmount", coupon.discountAmount ?? 0);
     setValue("isActive", coupon.isActive ?? true);
-    setValue("expiresAt", toDTLocal(coupon.expiresAt));
+    setValue("expiresAt", toDateInput(coupon.expiresAt));
   };
 
   const handleDelete = async (id) => {
@@ -257,48 +254,31 @@ export default function CouponsPage() {
             </form>
 
             {/* List */}
-            {coupons.length !== 0 &&
-              coupons.map((c) => (
-                <div
-                  key={c._id}
-                  className="flex flex-col justify-between gap-4 rounded-xl border border-zinc-700 bg-zinc-900 p-4 shadow sm:flex-row sm:items-center"
-                >
-                  <div>
-                    <h3 className="font-medium text-zinc-200">{c.code}</h3>
-                    <p className="text-sm text-zinc-400">
-                      Min subtotal: {formatCurrency(c.minSubtotal)}
-                    </p>
-                    <p className="text-sm text-zinc-400">
-                      Discount: -{formatCurrency(c.discountAmount)}
-                    </p>
-                    <p className="text-sm text-zinc-400">
-                      Expires:{" "}
-                      {c.expiresAt
-                        ? new Date(c.expiresAt).toLocaleString()
-                        : "Never"}
-                    </p>
-                    <p className="text-sm text-zinc-500">
-                      Status:{" "}
-                      <span
-                        className={
-                          c.isActive ? "text-green-400" : "text-red-400"
-                        }
-                      >
-                        {c.isActive ? "Active" : "Disabled"}
-                      </span>
-                    </p>
-                  </div>
-
-                  <div className="flex gap-3">
-                    <Button variant="edit" onClick={() => handleEdit(c)}>
-                      <HiPencilSquare size={22} />
-                    </Button>
-                    <Button variant="close" onClick={() => handleDelete(c._id)}>
-                      <HiMiniXMark size={20} strokeWidth={1} />
-                    </Button>
-                  </div>
-                </div>
-              ))}
+            {coupons.length === 0 ? (
+              <Empty resourceName="coupon" />
+            ) : (
+              <Table>
+                <Table.Header styles="grid grid-cols-[1.5fr_1.5fr_1.5fr_2fr_1fr_0.5fr] items-center gap-x-4 text-xs sm:text-sm md:text-base font-medium text-zinc-300 uppercase p-2 md:h-10 max-w-6xl">
+                  <div className="min-w-0 truncate">Code</div>
+                  <div className="min-w-0 truncate">Min Subtotal</div>
+                  <div className="min-w-0 truncate">Discount</div>
+                  <div className="min-w-0 truncate">Expires</div>
+                  <div className="min-w-0 truncate">Status</div>
+                  <div aria-hidden="true" />
+                </Table.Header>
+                <Table.Body
+                  data={coupons}
+                  render={(coupon) => (
+                    <CouponRow
+                      key={coupon._id}
+                      coupon={coupon}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                    />
+                  )}
+                />
+              </Table>
+            )}
           </div>
         </ContainerBox>
       )}

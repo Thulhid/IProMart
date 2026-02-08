@@ -48,6 +48,20 @@ export async function deleteCouponLink(id) {
   }
 }
 
+export async function updateCouponLink(id, payload) {
+  try {
+    const res = await axios.patch(
+      `${API_BASE_URL}/api/v1/coupon-links/${id}`,
+      payload,
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (error) {
+    console.error("Error updating coupon link:", error);
+    throw new Error(getErrMsg(error));
+  }
+}
+
 // --- helpers for admin UI ---
 
 export async function getCouponsForSelect() {

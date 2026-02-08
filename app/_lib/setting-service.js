@@ -24,9 +24,18 @@ export async function createSetting(payload) {
 
 export async function updateSetting(payload) {
   try {
+    const apiPayload = {
+      shippingFee: payload.shippingFee,
+      pointsEnabled: payload.pointsEnabled,
+      pointsValueRs: payload.pointValueRs,
+      pointsRedeemCapPercent: payload.maxRedeemPercent,
+      pointsMinRedeemPoints: payload.minRedeemPoints,
+      pointsAllowWithCoupon: payload.allowPointsWithCoupon,
+    };
+
     const res = await axios.patch(
       `${API_BASE_URL}/api/v1/setting/${SETTING_ID}`,
-      payload,
+      apiPayload,
       {
         withCredentials: true,
       },
@@ -46,7 +55,22 @@ export async function getSetting() {
       },
     );
 
-    return res.data;
+    const doc = res.data?.data?.data ?? {};
+    const mapped = {
+      ...doc,
+      pointValueRs: doc?.pointsValueRs ?? 1,
+      maxRedeemPercent: doc?.pointsRedeemCapPercent ?? 20,
+      minRedeemPoints: doc?.pointsMinRedeemPoints ?? 0,
+      allowPointsWithCoupon: doc?.pointsAllowWithCoupon ?? false,
+    };
+
+    const resData = res.data ?? {};
+    const resDataData = resData.data ?? {};
+
+    return {
+      ...resData,
+      data: { ...resDataData, data: mapped },
+    };
   } catch (error) {
     handleError(error);
   }

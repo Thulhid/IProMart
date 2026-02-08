@@ -13,6 +13,7 @@ function CartProduct({ product, onQuantityChange, onRemove }) {
 
   const {
     currentQuantity,
+    isUpdating,
     handleDecCurrentQuantity,
     handleIncCurrentQuantity,
   } = useQuantity(product, onQuantityChange);
@@ -61,7 +62,11 @@ function CartProduct({ product, onQuantityChange, onRemove }) {
 
         <div className="mt-3 sm:mt-2">
           <div className="flex items-center gap-3 sm:gap-4">
-            <Button variant="updateQuantity" onClick={handleDecCurrentQuantity}>
+            <Button
+              variant="updateQuantity"
+              onClick={handleDecCurrentQuantity}
+              disabled={isUpdating}
+            >
               <HiMinusSmall
                 className="text-zinc-50/50 group-hover:text-zinc-200 group-active:text-zinc-200"
                 size={22}
@@ -71,7 +76,11 @@ function CartProduct({ product, onQuantityChange, onRemove }) {
             <span className="w-8 text-center text-zinc-50">
               {currentQuantity}
             </span>
-            <Button variant="updateQuantity" onClick={handleIncCurrentQuantity}>
+            <Button
+              variant="updateQuantity"
+              onClick={handleIncCurrentQuantity}
+              disabled={isUpdating}
+            >
               <HiPlusSmall
                 className="text-zinc-50/50 group-hover:text-zinc-200 group-active:text-zinc-200"
                 size={22}

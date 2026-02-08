@@ -1,33 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 export function useQuantity(product, onQuantityChange) {
-  const [currentQuantity, setCurrentQuantity] = useState(
-    product?.quantity || 1
-  );
+  const [currentQuantity, setCurrentQuantity] = useState(product?.quantity || 1);
+  const [isUpdating, setIsUpdating] = useState(false);
 
-  function handleDecCurrentQuantity() {
-    if (currentQuantity <= 1) {
-      setCurrentQuantity(1);
+  useEffect(() => {
+    setCurrentQuantity(product?.quantity || 1);
+  }, [product?._id, product?.quantity]);
+
+  async function applyQuantity(newQuantity) {
+    if (!onQuantityChange) {
+      setCurrentQuantity(newQuantity);
       return;
     }
 
-    const newQuantity = currentQuantity - 1;
-    setCurrentQuantity(newQuantity);
-    onQuantityChange?.(newQuantity, product);
+    try {
+      setIsUpdating(true);
+      await Promise.resolve(onQuantityChange(newQuantity, product));
+      setCurrentQuantity(newQuantity);
+    } catch (err) {
+      toast.error(err?.message || "Failed to update quantity");
+    } finally {
+      setIsUpdating(false);
+    }
+  }
+
+  function handleDecCurrentQuantity() {
+    if (isUpdating) return;
+    const newQuantity = Math.max(1, currentQuantity - 1);
+    if (newQuantity === currentQuantity) return;
+    applyQuantity(newQuantity);
   }
 
   function handleIncCurrentQuantity() {
-    const newQuantity = currentQuantity + 1;
-    if (product.availability < newQuantity)
-      return toast.error(`Only ${product.availability} product(s) in stock`);
+    if (isUpdating) return;
 
-    setCurrentQuantity(newQuantity);
-    onQuantityChange?.(newQuantity, product);
+    const newQuantity = currentQuantity + 1;
+    const stock = Number(product?.availability);
+
+    if (Number.isFinite(stock) && stock >= 0 && newQuantity > stock) {
+      return toast.error(`Only ${stock} product(s) in stock`);
+    }
+
+    applyQuantity(newQuantity);
   }
 
   return {
     currentQuantity,
+    isUpdating,
     handleDecCurrentQuantity,
     handleIncCurrentQuantity,
   };

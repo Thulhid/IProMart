@@ -3,9 +3,14 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { useForm } from "react-hook-form";
+import { HiOutlineChevronLeft } from "react-icons/hi2";
 
+import BackButton from "@/app/_components/BackButton";
 import Button from "@/app/_components/Button";
+import Empty from "@/app/_components/Empty";
+import PromoLinkRow from "@/app/_components/PromoLinkRow";
 import Spinner from "@/app/_components/Spinner";
+import Table from "@/app/_components/Table";
 import { getEmployee } from "@/app/_lib/employee-service";
 import {
   createCouponLink,
@@ -13,6 +18,7 @@ import {
   getCouponLinks,
   getCouponsForSelect,
   searchProductsForSelect,
+  updateCouponLink,
 } from "@/app/_lib/coupon-link-service";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -28,6 +34,10 @@ export default function Page() {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [lastCreated, setLastCreated] = useState(null);
+  const [rangePreset, setRangePreset] = useState("all"); // all | 7 | 30 | custom
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
+  const [applyTick, setApplyTick] = useState(0); // trigger custom apply
 
   const {
     register,
@@ -41,6 +51,7 @@ export default function Page() {
       couponId: "",
       productId: "",
       isActive: true,
+      maxRedemptions: "",
     },
   });
 
@@ -138,6 +149,14 @@ export default function Page() {
         isActive: Boolean(values.isActive),
       };
 
+      if (values.maxRedemptions !== "" && values.maxRedemptions != null) {
+        const max = Number(values.maxRedemptions);
+        if (!Number.isFinite(max) || max < 1 || !Number.isInteger(max)) {
+          return toast.error("Max redemptions must be a whole number (>= 1)");
+        }
+        payload.maxRedemptions = max;
+      }
+
       const res = await createCouponLink(payload);
       const created = res?.data?.data || res?.data?.data?.data;
 
@@ -159,7 +178,12 @@ export default function Page() {
       });
 
       toast.success("Promo link created");
-      reset({ couponId: "", productId: "", isActive: true });
+      reset({
+        couponId: "",
+        productId: "",
+        isActive: true,
+        maxRedemptions: "",
+      });
       setSelectedProduct(null);
       setProductQuery("");
       await refresh();
@@ -178,6 +202,86 @@ export default function Page() {
     }
   };
 
+  const handleUpdateLink = async (
+    id,
+    patch,
+    successMessage = "Link updated",
+  ) => {
+    const toastId = toast.loading("Updating...");
+    try {
+      await updateCouponLink(id, patch);
+      toast.success(successMessage, { id: toastId });
+      await refresh();
+      return true;
+    } catch (err) {
+      toast.error(err?.message || "Failed to update link", { id: toastId });
+      return false;
+    }
+  };
+
+  const handleToggleActive = async (id, nextActive) => {
+    await handleUpdateLink(
+      id,
+      { isActive: Boolean(nextActive) },
+      `Link ${nextActive ? "activated" : "deactivated"}`,
+    );
+  };
+
+  const filteredLinks = useMemo(() => {
+    if (!Array.isArray(links) || links.length === 0) return [];
+    if (rangePreset === "all") return links;
+
+    const now = new Date();
+    let start;
+
+    if (rangePreset === "7") {
+      start = new Date(now);
+      start.setDate(now.getDate() - 6);
+    } else if (rangePreset === "30") {
+      start = new Date(now);
+      start.setDate(now.getDate() - 29);
+    } else if (rangePreset === "custom" && customFrom && customTo) {
+      start = new Date(customFrom);
+      const end = new Date(customTo);
+      return links.filter((l) => {
+        const created = new Date(
+          l.createdAt || l.updatedAt || l.date || l.created_at,
+        );
+        return (
+          !Number.isNaN(created) &&
+          created >= start &&
+          created <=
+            new Date(
+              end.getFullYear(),
+              end.getMonth(),
+              end.getDate(),
+              23,
+              59,
+              59,
+            )
+        );
+      });
+    }
+
+    return links.filter((l) => {
+      const created = new Date(
+        l.createdAt || l.updatedAt || l.date || l.created_at,
+      );
+      return (
+        !Number.isNaN(created) &&
+        created >=
+          new Date(
+            start.getFullYear(),
+            start.getMonth(),
+            start.getDate(),
+            0,
+            0,
+            0,
+          )
+      );
+    });
+  }, [links, rangePreset, customFrom, customTo, applyTick]);
+
   if (loading) return <Spinner />;
 
   if (!isAdmin) {
@@ -193,20 +297,35 @@ export default function Page() {
   }
 
   return (
-    <div className="m-auto max-w-6xl p-4">
-      <h1 className="text-2xl font-semibold text-zinc-200">Promo Links</h1>
-      <p className="mt-1 text-zinc-400">
-        Create a shareable link that auto-applies a coupon for a specific
-        product.
-      </p>
+    <div className="mx-4 my-6 md:mx-10 2xl:mx-auto 2xl:max-w-[1440px]">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <BackButton>
+          <HiOutlineChevronLeft
+            className="text-zinc-50/50 group-hover:text-zinc-200 group-active:text-zinc-200"
+            size={28}
+            strokeWidth={3}
+          />
+        </BackButton>
+        <div className="flex flex-1 items-center justify-between gap-4">
+          <h1 className="text-3xl font-semibold text-zinc-300">Promo Links</h1>
+          <div className="hidden items-center gap-2 text-xs text-zinc-300 sm:flex">
+            <span className="rounded-full bg-blue-700 px-3 py-1 text-blue-50">
+              Total: {filteredLinks.length}
+            </span>
+            <span className="rounded-full bg-green-700 px-3 py-1 text-green-50">
+              Active: {filteredLinks.filter((l) => l.isActive).length}
+            </span>
+          </div>
+        </div>
+      </div>
 
       {/* Create */}
-      <div className="mt-6 rounded-lg border border-zinc-700/50 bg-zinc-900/40 p-4">
+      <div className="mx-auto mt-6 rounded-lg border border-zinc-700/50 bg-zinc-900/40 p-4 2xl:max-w-6xl">
         <h2 className="text-lg font-semibold text-zinc-200">Create new link</h2>
 
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2"
+          className="mt-4 grid grid-cols-1 gap-15 md:grid-cols-2"
         >
           {/* Product search */}
           <div className="relative">
@@ -260,7 +379,7 @@ export default function Page() {
             <label className="font-medium text-zinc-200">Coupon</label>
             <select
               {...register("couponId", { required: true })}
-              className="input mt-2 w-full"
+              className="mt-2 w-full cursor-pointer rounded-md bg-zinc-800 px-3 py-2 text-zinc-200"
               defaultValue=""
             >
               <option value="" disabled>
@@ -285,25 +404,49 @@ export default function Page() {
             )}
           </div>
 
-          {/* Active */}
-          <div className="flex items-center gap-3 md:col-span-2">
-            <input
-              id="isActive"
-              type="checkbox"
-              {...register("isActive")}
-              className="h-4 w-4"
-              checked={Boolean(isActive)}
-              onChange={(e) => setValue("isActive", e.target.checked)}
-            />
-            <label htmlFor="isActive" className="text-zinc-200">
-              Active (can be redeemed)
+          {/* Max redemptions */}
+          <div>
+            <label className="font-medium text-zinc-200">
+              Max redemptions{" "}
+              <span className="text-xs font-normal text-zinc-500">
+                (optional)
+              </span>
             </label>
+            <input
+              type="number"
+              min={1}
+              step={1}
+              placeholder="Leave empty for unlimited"
+              className="input mt-2 w-full"
+              {...register("maxRedemptions")}
+            />
+            <p className="mt-1 text-xs text-zinc-500">
+              When the redeemed count reaches this number, the link is
+              automatically deactivated.
+            </p>
           </div>
 
-          <div className="md:col-span-2">
-            <Button variant="primary" type="submit">
-              Create Promo Link
-            </Button>
+          {/* Active + Create */}
+          <div className="flex flex-col gap-3 md:justify-end">
+            <div className="flex items-center gap-3">
+              <input
+                id="isActive"
+                type="checkbox"
+                {...register("isActive")}
+                className="h-4 w-4"
+                checked={Boolean(isActive)}
+                onChange={(e) => setValue("isActive", e.target.checked)}
+              />
+              <label htmlFor="isActive" className="text-zinc-200">
+                Active (can be redeemed)
+              </label>
+            </div>
+
+            <div>
+              <Button variant="primary" type="submit">
+                Create Promo Link
+              </Button>
+            </div>
           </div>
         </form>
 
@@ -354,75 +497,38 @@ export default function Page() {
       </div>
 
       {/* List */}
-      <div className="mt-8">
+      <div className="mx-auto mt-8 2xl:max-w-6xl">
         <h2 className="text-lg font-semibold text-zinc-200">Existing links</h2>
 
         {links.length === 0 ? (
-          <p className="mt-2 text-zinc-400">No promo links yet.</p>
+          <Empty resourceName="promo link" />
         ) : (
-          <div className="mt-3 grid grid-cols-1 gap-3">
-            {links.map((l) => {
-              const id = l._id || l.id;
-              const productName =
-                l?.Product?.name ||
-                l?.product?.name ||
-                l?.productName ||
-                l?.product;
-
-              const couponCode =
-                l?.Coupon?.code || l?.coupon?.code || l?.couponCode || "";
-
-              const active = Boolean(l.isActive);
-              const redeemed = Number(l.redeemedCount || 0);
-
-              return (
-                <div
-                  key={id}
-                  className="rounded-lg border border-zinc-700/50 bg-zinc-900/30 p-4"
-                >
-                  <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                    <div>
-                      <p className="text-sm text-zinc-500">Product</p>
-                      <p className="text-zinc-200">{productName}</p>
-
-                      <p className="mt-2 text-sm text-zinc-500">Coupon</p>
-                      <p className="text-zinc-200">{couponCode || "-"}</p>
-
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 ${
-                            active
-                              ? "bg-green-600/15 text-green-400 ring-green-600/40"
-                              : "bg-red-600/15 text-red-400 ring-red-600/40"
-                          }`}
-                        >
-                          {active ? "Active" : "Inactive"}
-                        </span>
-
-                        <span className="rounded-full bg-zinc-800 px-3 py-1 text-xs font-semibold text-zinc-300 ring-1 ring-zinc-700">
-                          Redeemed: {redeemed}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2 md:flex-col md:items-end">
-                      <Button
-                        variant="close"
-                        type="button"
-                        onClick={() => handleDelete(id)}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
-
-                  <p className="mt-3 text-xs text-zinc-500">
-                    Note: Backend stores only token hash for security. Copy the
-                    link right after creation.
-                  </p>
-                </div>
-              );
-            })}
+          <div className="mt-3">
+            <Table>
+              <Table.Header styles="grid grid-cols-[2.5fr_1.5fr_1fr_1fr_0.5fr] items-center gap-x-4 text-xs sm:text-sm md:text-base font-medium text-zinc-300 uppercase p-2 md:h-10 ">
+                <div className="min-w-0 truncate">Product</div>
+                <div className="min-w-0 truncate">Coupon</div>
+                <div className="min-w-0 truncate">Status</div>
+                <div className="min-w-0 truncate">Redeemed / Max</div>
+                <div aria-hidden="true" />
+              </Table.Header>
+              <Table.Body
+                data={links}
+                render={(link) => (
+                  <PromoLinkRow
+                    key={link._id || link.id}
+                    link={link}
+                    onDelete={handleDelete}
+                    onToggleActive={handleToggleActive}
+                    onUpdate={handleUpdateLink}
+                  />
+                )}
+              />
+            </Table>
+            <p className="mt-3 text-xs text-zinc-500">
+              Note: Backend stores only token hash for security. Copy the link
+              right after creation.
+            </p>
           </div>
         )}
       </div>
