@@ -3,6 +3,7 @@ import dynamic from "next/dynamic";
 import { Poppins } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import { CustomerProvider } from "@/app/_context/CustomerContext";
+import Breadcrumbs from "@/app/_components/Breadcrumbs";
 const Footer = dynamic(() => import("@/app/_components/Footer"));
 
 const poppins = Poppins({
@@ -64,6 +65,7 @@ export default function RootLayout({ children }) {
         <CustomerProvider>
           <main className="pb-10 sm:min-w-auto md:pb-0">
             {/* bottom padding = height of bottom nav */}
+            <Breadcrumbs />
             {children}
             <Footer />
           </main>

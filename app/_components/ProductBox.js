@@ -9,7 +9,9 @@ async function ProductBox({ searchParams, products }) {
 
   if (searchParams?.category) {
     const category = await getCategoryById(searchParams?.category);
-    subs = category.data.data.Subcategories;
+    const payload =
+      category?.data?.data ?? category?.data ?? category?.category ?? category;
+    subs = payload?.subcategories ?? payload?.Subcategories ?? [];
   }
 
   return (

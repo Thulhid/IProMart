@@ -80,7 +80,7 @@ export default function SettingsPage() {
             onSubmit={handleSubmit(onSubmit)}
             className="w-full max-w-xl space-y-6 rounded-2xl border border-zinc-700 bg-zinc-900 p-8 shadow-lg shadow-blue-600/40"
           >
-            <div className="space-y-2">
+            <div className="flex w-fit flex-col space-y-2">
               <label className="font-medium text-zinc-100">
                 Shipping Fee (Rs.)
               </label>
@@ -109,7 +109,7 @@ export default function SettingsPage() {
                 Enable Points
               </label>
 
-              <div className="space-y-2">
+              <div className="flex w-fit flex-col space-y-2">
                 <label className="font-medium text-zinc-100">
                   1 Point value (Rs.)
                 </label>

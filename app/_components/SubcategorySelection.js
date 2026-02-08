@@ -24,7 +24,19 @@ export default function SubcategorySelection({ isVertical = false }) {
       }
       try {
         const res = await getCategoryById(categoryId);
-        const list = res?.data?.data?.data?.Subcategories ?? [];
+        const payload =
+          res?.data?.data?.data ??
+          res?.data?.data ??
+          res?.data ??
+          res?.category ??
+          res ??
+          {};
+        const list =
+          payload?.subcategories ??
+          payload?.Subcategories ??
+          payload?.subcategory ??
+          payload?.Subcategory ??
+          [];
         setSubcategories(list);
       } catch (error) {
         toast.error(error?.message || "Failed to load subcategories");

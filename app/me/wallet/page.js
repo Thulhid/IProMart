@@ -177,7 +177,6 @@ export default function WalletPage() {
         </BackButton>
 
         <div className="flex items-center gap-3">
-          <HiOutlineWallet className="text-blue-300" size={26} />
           <h1 className="text-2xl font-semibold text-zinc-300 sm:text-3xl">
             My Wallet
           </h1>
@@ -277,8 +276,8 @@ export default function WalletPage() {
 
               {!threshold.enabled ? (
                 <p className="mt-2 text-xs text-zinc-500">
-                  You can redeem points as long as you have available balance and
-                  your order cap allows it.
+                  You can redeem points as long as you have available balance
+                  and your order cap allows it.
                 </p>
               ) : (
                 <>
@@ -308,7 +307,9 @@ export default function WalletPage() {
             </div>
 
             <div className="rounded-xl border border-zinc-700 bg-zinc-800 p-4">
-              <p className="text-sm font-semibold text-zinc-200">Wallet Rules</p>
+              <p className="text-sm font-semibold text-zinc-200">
+                Wallet Rules
+              </p>
 
               <div className="mt-3 space-y-2 text-sm text-zinc-300">
                 <div className="flex items-center justify-between">
