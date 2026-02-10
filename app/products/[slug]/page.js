@@ -1,4 +1,5 @@
 import BackButton from "@/app/_components/BackButton";
+import KokoPaymentIndicator from "@/app/_components/KokoPaymentIndicator";
 import ProductDetailsActions from "@/app/_components/ProductDetailsActions";
 import Slider from "@/app/_components/Slider";
 import SparkEffect from "@/app/_components/SparkEffect";
@@ -59,6 +60,17 @@ export default async function Page({ params, searchParams }) {
 
   const shownDiscount =
     regularPrice !== null ? Math.max(0, regularPrice - displayPrice) : 0;
+
+  const installmentTotal = Number.isFinite(displayPrice)
+    ? Math.max(0, Math.round(displayPrice))
+    : 0;
+  const installmentBase = Math.floor(installmentTotal / 3);
+  const installmentRemainder = installmentTotal - installmentBase * 3;
+  const installments = [
+    installmentBase + (installmentRemainder > 0 ? 1 : 0),
+    installmentBase + (installmentRemainder > 1 ? 1 : 0),
+    installmentBase,
+  ];
 
   return (
     <div className="m-auto max-w-[1440px]">
@@ -190,6 +202,14 @@ export default async function Page({ params, searchParams }) {
                 ? "Out of Stock"
                 : `Only ${availability} left`}
           </p>
+
+          <KokoPaymentIndicator
+            todayAmount={formatCurrency(installments[0])}
+            day30Amount={formatCurrency(installments[1])}
+            day60Amount={formatCurrency(installments[2])}
+            totalAmount={formatCurrency(installmentTotal)}
+            compact={true}
+          />
 
           <ProductDetailsActions product={product} />
         </section>

@@ -521,6 +521,7 @@ export default function Page() {
                     onDelete={handleDelete}
                     onToggleActive={handleToggleActive}
                     onUpdate={handleUpdateLink}
+                    onRefresh={refresh}
                   />
                 )}
               />

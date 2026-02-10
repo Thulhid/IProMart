@@ -92,3 +92,17 @@ export async function searchProductsForSelect(name, limit = 8) {
     throw new Error(getErrMsg(error));
   }
 }
+
+export async function rotateCouponLink(id) {
+  try {
+    const res = await axios.post(
+      `${API_BASE_URL}/api/v1/coupon-links/${id}/rotate`,
+      null,
+      { withCredentials: true },
+    );
+    return res.data;
+  } catch (error) {
+    console.error("Error rotating coupon link:", error);
+    throw new Error(getErrMsg(error));
+  }
+}

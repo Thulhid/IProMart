@@ -9,6 +9,7 @@ import {
 } from "@/app/_utils/helper";
 import BackButton from "@/app/_components/BackButton";
 import CartProductBox from "@/app/_components/CartProductBox";
+import KokoPaymentIndicator from "@/app/_components/KokoPaymentIndicator";
 import {
   createOrUpdateCart,
   getCustomerCart,
@@ -270,6 +271,14 @@ export default function Page() {
     0,
     baseTotal - (discountAmount || 0) - (pointsDiscountAmount || 0),
   );
+  const installmentTotal = Math.max(0, Math.round(total));
+  const installmentBase = Math.floor(installmentTotal / 3);
+  const installmentRemainder = installmentTotal - installmentBase * 3;
+  const installments = [
+    installmentBase + (installmentRemainder > 0 ? 1 : 0),
+    installmentBase + (installmentRemainder > 1 ? 1 : 0),
+    installmentBase,
+  ];
 
   return (
     <div className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 md:px-10">
@@ -419,6 +428,14 @@ export default function Page() {
               <span>Total Price:</span>
               <span>{formatCurrency(total)}</span>
             </div>
+
+            <KokoPaymentIndicator
+              todayAmount={formatCurrency(installments[0])}
+              day30Amount={formatCurrency(installments[1])}
+              day60Amount={formatCurrency(installments[2])}
+              totalAmount={formatCurrency(installmentTotal)}
+              compact={true}
+            />
 
             <PayHereButton
               total={total}

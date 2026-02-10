@@ -3,25 +3,44 @@ import Button from "@/app/_components/Button";
 import Menus from "@/app/_components/Menus";
 import Modal from "@/app/_components/Modal";
 import Table from "@/app/_components/Table";
+import { rotateCouponLink } from "@/app/_lib/coupon-link-service";
+import toast from "react-hot-toast";
 import { useState } from "react";
 import {
   HiCheckCircle,
+  HiOutlineClipboardDocument,
+  HiOutlineLink,
   HiPencilSquare,
   HiTrash,
   HiXCircle,
 } from "react-icons/hi2";
 
-function PromoLinkRow({ link, onDelete, onToggleActive, onUpdate }) {
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    toast.success("Copied!");
+  } catch {
+    toast.error("Copy failed");
+  }
+}
+
+function PromoLinkRow({ link, onDelete, onToggleActive, onUpdate, onRefresh }) {
   const id = link._id || link.id;
+
   const productName =
     link?.Product?.name ||
     link?.product?.name ||
     link?.productName ||
     link?.product ||
     "-";
+
   const couponCode =
     link?.Coupon?.code || link?.coupon?.code || link?.couponCode || "-";
+
   const active = Boolean(link.isActive);
+
   const redeemed = Number(link.redeemedCount || 0);
   const maxRedemptionsRaw = link?.maxRedemptions ?? link?.maxRedemtions;
   const maxRedemptions = (() => {
@@ -29,10 +48,15 @@ function PromoLinkRow({ link, onDelete, onToggleActive, onUpdate }) {
     const max = Number(maxRedemptionsRaw);
     return Number.isFinite(max) ? max : null;
   })();
+
   const redeemedLabel =
     Number.isFinite(maxRedemptions) && maxRedemptions >= 1
       ? `${redeemed}/${maxRedemptions}`
       : `${redeemed}`;
+
+  // ✅ ONLY backend share link (safe + reliable)
+  const token = link?.publicCode || null;
+  const shareLink = token ? `${API_BASE_URL}/api/v1/p/${token}` : null;
 
   function EditPromoLinkForm({ onCloseModal }) {
     const [isActive, setIsActive] = useState(Boolean(link.isActive));
@@ -59,8 +83,7 @@ function PromoLinkRow({ link, onDelete, onToggleActive, onUpdate }) {
       if (maxRedemptionsInput === "") {
         if (maxRedemptions != null) patch.maxRedemptions = null;
       } else {
-        const max = Number(maxRedemptionsInput);
-        patch.maxRedemptions = max;
+        patch.maxRedemptions = Number(maxRedemptionsInput);
       }
 
       setSaving(true);
@@ -127,6 +150,30 @@ function PromoLinkRow({ link, onDelete, onToggleActive, onUpdate }) {
     );
   }
 
+  const handleCopyShare = async () => {
+    if (!shareLink) return toast.error("No link code found. Regenerate it.");
+    await copyText(shareLink);
+  };
+
+  const handleRotateAndCopy = async () => {
+    const toastId = toast.loading("Generating new promo link...");
+    try {
+      const res = await rotateCouponLink(id);
+      const updated = res?.data?.data || res?.data?.data?.data;
+      const newToken = updated?.token || updated?.publicCode;
+
+      if (!newToken) throw new Error("Rotate failed: missing token");
+
+      const newShare = `${API_BASE_URL}/api/v1/p/${newToken}`;
+      await copyText(newShare);
+
+      toast.success("New link generated & copied", { id: toastId });
+      await onRefresh?.();
+    } catch (err) {
+      toast.error(err?.message || "Failed to generate new link", { id: toastId });
+    }
+  };
+
   return (
     <Table.Row styles="grid grid-cols-[2.5fr_1.5fr_1fr_1fr_0.5fr] items-start gap-x-4 border-t border-t-zinc-600 p-2 text-zinc-300 max-w-6xl bg-zinc-900">
       <div className="truncate text-xs md:text-sm">{productName}</div>
@@ -137,10 +184,35 @@ function PromoLinkRow({ link, onDelete, onToggleActive, onUpdate }) {
         </span>
       </div>
       <div className="text-[10px] md:text-sm">{redeemedLabel}</div>
+
       <Modal>
         <Menus>
           <Menus.Toggle id={id} />
           <Menus.List id={id}>
+            {/* ✅ ONLY backend link */}
+            {shareLink ? (
+              <Menus.ButtonMenu
+                icon={<HiOutlineLink size={18} className="text-zinc-400" />}
+                variant="menu"
+                onClick={handleCopyShare}
+              >
+                Copy promo link
+              </Menus.ButtonMenu>
+            ) : (
+              <Menus.ButtonMenu
+                icon={
+                  <HiOutlineClipboardDocument
+                    size={18}
+                    className="text-zinc-400"
+                  />
+                }
+                variant="menu"
+                onClick={handleRotateAndCopy}
+              >
+                Generate link & copy
+              </Menus.ButtonMenu>
+            )}
+
             <Modal.Open opens="promo-link-edit">
               <Menus.ButtonMenu
                 icon={<HiPencilSquare size={18} className="text-zinc-400" />}
@@ -149,6 +221,7 @@ function PromoLinkRow({ link, onDelete, onToggleActive, onUpdate }) {
                 Edit
               </Menus.ButtonMenu>
             </Modal.Open>
+
             <Menus.ButtonMenu
               icon={
                 active ? (
@@ -162,6 +235,7 @@ function PromoLinkRow({ link, onDelete, onToggleActive, onUpdate }) {
             >
               {active ? "Set Inactive" : "Set Active"}
             </Menus.ButtonMenu>
+
             <Modal.Open opens="promo-link-delete">
               <Menus.ButtonMenu
                 icon={<HiTrash size={18} className="text-zinc-400" />}
@@ -171,14 +245,13 @@ function PromoLinkRow({ link, onDelete, onToggleActive, onUpdate }) {
               </Menus.ButtonMenu>
             </Modal.Open>
           </Menus.List>
+
           <Modal.Window name="promo-link-edit">
             <EditPromoLinkForm />
           </Modal.Window>
+
           <Modal.Window name="promo-link-delete">
-            <ConfirmDelete
-              resource="promo link"
-              onConfirm={() => onDelete(id)}
-            />
+            <ConfirmDelete resource="promo link" onConfirm={() => onDelete(id)} />
           </Modal.Window>
         </Menus>
       </Modal>
