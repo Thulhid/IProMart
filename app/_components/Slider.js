@@ -54,9 +54,9 @@ function Slider({
   if (searchParams.get("name")) return null;
 
   return (
-    <div className={`relative max-w-5xl xl:m-auto ${containerStyles}`}>
+    <div className={`relative m-auto max-w-7xl ${containerStyles}`}>
       {/* Carousel wrapper */}
-      <div className="relative h-56 overflow-hidden rounded-lg md:h-120">
+      <div className="relative h-56 overflow-hidden rounded-lg md:h-160">
         {normalizedSlides.map((slide, index) => {
           const imageElement = (
             <Image

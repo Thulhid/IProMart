@@ -46,7 +46,7 @@ export default async function Page({ searchParams }) {
         <Slider
           slides={orderedSlides}
           autoSlide
-          containerStyles="pb-15"
+          containerStyles="px-4 pb-15"
           autoSlideInterval={4000}
         />
       )}
