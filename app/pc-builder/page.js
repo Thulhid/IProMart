@@ -54,22 +54,85 @@ const AMD_MB_KEYS =
 const INTEL_MB_KEYS =
   /(intel|lga(1151|1200|1700)|\bz\d{3}\b|\bb\d{3}\b|\bh\d{3}\b)/i;
 
+function normalizeLabel(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getEntityName(entity) {
+  if (!entity || typeof entity === "string") return "";
+  return String(entity.name || "");
+}
+
+function getEntityId(entity) {
+  if (!entity) return undefined;
+  if (typeof entity === "string") return entity;
+  return entity._id || entity.id;
+}
+
+function getCategoryName(product) {
+  return getEntityName(product?.category) || getEntityName(product?.Category);
+}
+
+function getSubcategoryName(product) {
+  return (
+    getEntityName(product?.subcategory) || getEntityName(product?.Subcategory)
+  );
+}
+
+function getProductId(product) {
+  return product?._id || product?.id;
+}
+
+function normalizeBuilderProduct(product) {
+  const id = getProductId(product);
+  const price = Number(product?.price ?? 0);
+  const priceDiscount = Number(product?.priceDiscount ?? 0);
+  const finalPrice = Number(
+    product?.finalPrice ?? Math.max(0, price - priceDiscount),
+  );
+
+  return {
+    id,
+    _id: id,
+    name: product?.name || "",
+    price,
+    priceDiscount,
+    finalPrice,
+    description: product?.description || "",
+    imageCover: product?.imageCover || fallbackImg(id || product?.name),
+    subcategory: {
+      id: getEntityId(product?.subcategory) || getEntityId(product?.Subcategory),
+      name: getSubcategoryName(product),
+    },
+    category: {
+      id: getEntityId(product?.category) || getEntityId(product?.Category),
+      name: getCategoryName(product),
+    },
+    slug: product?.slug || "",
+    availability: product?.availability,
+  };
+}
+
 function isAmdCPU(p) {
-  const t = `${p?.subcategory?.name ?? ""} ${p?.name ?? ""}`.toLowerCase();
+  const t = `${getSubcategoryName(p)} ${p?.name ?? ""}`.toLowerCase();
   return AMD_CPU_KEYS.test(t);
 }
 function isIntelCPU(p) {
-  const t = `${p?.subcategory?.name ?? ""} ${p?.name ?? ""}`.toLowerCase();
+  const t = `${getSubcategoryName(p)} ${p?.name ?? ""}`.toLowerCase();
   return INTEL_CPU_KEYS.test(t);
 }
 function isAmdMB(p) {
   const t =
-    `${p?.subcategory?.name ?? ""} ${p?.name ?? ""} ${p?.description ?? ""}`.toLowerCase();
+    `${getSubcategoryName(p)} ${p?.name ?? ""} ${p?.description ?? ""}`.toLowerCase();
   return AMD_MB_KEYS.test(t);
 }
 function isIntelMB(p) {
   const t =
-    `${p?.subcategory?.name ?? ""} ${p?.name ?? ""} ${p?.description ?? ""}`.toLowerCase();
+    `${getSubcategoryName(p)} ${p?.name ?? ""} ${p?.description ?? ""}`.toLowerCase();
   return INTEL_MB_KEYS.test(t);
 }
 
@@ -153,9 +216,9 @@ export default function PcBuilderPage() {
           const docs = res?.data?.data || [];
           if (!docs.length) break;
 
-          const filtered = docs.filter((p) =>
-            isPrebuiltCategoryName(p?.category?.name),
-          );
+          const filtered = docs
+            .filter((p) => isPrebuiltCategoryName(getCategoryName(p)))
+            .map(normalizeBuilderProduct);
           out.push(...filtered);
 
           const results = Number(res?.results ?? docs.length);
@@ -189,7 +252,7 @@ export default function PcBuilderPage() {
       (p) =>
         p.name?.toLowerCase().includes(q) ||
         p.description?.toLowerCase().includes(q) ||
-        p.subcategory?.name?.toLowerCase().includes(q),
+        getSubcategoryName(p).toLowerCase().includes(q),
     );
   }, [search, options]);
 
@@ -270,7 +333,7 @@ export default function PcBuilderPage() {
     setIsLoading(true);
     try {
       const wantNames = (CATEGORY_MATCH[partKey] || []).map((s) =>
-        s.toLowerCase(),
+        normalizeLabel(s),
       );
       let localPage = isFirst ? 1 : page;
       let collected = isFirst ? [] : [...options];
@@ -284,26 +347,15 @@ export default function PcBuilderPage() {
 
         // 1) Filter by category name (case-insensitive)
         const byCategory = docs.filter((p) => {
-          const cat = (p?.category?.name || "").toLowerCase();
-          return wantNames.includes(cat);
+          const cat = normalizeLabel(getCategoryName(p));
+          if (!cat) return false;
+          return wantNames.some(
+            (want) => cat === want || cat.includes(want) || want.includes(cat),
+          );
         });
 
         // 2) Normalize product shape (include fields used by cart/guest)
-        let mapped = byCategory.map((p) => ({
-          id: p._id,
-          _id: p._id,
-          name: p.name,
-          price: p.price,
-          priceDiscount: p.priceDiscount || 0,
-          finalPrice:
-            p.finalPrice ??
-            Math.max(0, (p.price ?? 0) - (p.priceDiscount ?? 0)),
-          description: p.description,
-          imageCover: p.imageCover || fallbackImg(p._id || p.name),
-          subcategory: p.subcategory,
-          category: p.category,
-          slug: p.slug,
-        }));
+        let mapped = byCategory.map(normalizeBuilderProduct);
 
         // 3) Simple platform filter:
         if (partKey === "motherboard" && selected?.cpu) {
@@ -317,7 +369,14 @@ export default function PcBuilderPage() {
             mapped = mapped.filter(isIntelCPU);
         }
 
-        collected = [...collected, ...mapped];
+        const seenIds = new Set();
+        collected = [...collected, ...mapped].filter((item) => {
+          const key = item?.id || item?._id || item?.slug;
+          if (!key) return true;
+          if (seenIds.has(key)) return false;
+          seenIds.add(key);
+          return true;
+        });
 
         if (!results || results === 0) {
           reachedEnd = true;
@@ -495,7 +554,7 @@ export default function PcBuilderPage() {
                       <Image
                         src={
                           chosen.imageCover ||
-                          fallbackImg(chosen.id || chosen.name)
+                          fallbackImg(chosen.id || chosen._id || chosen.name)
                         }
                         alt={chosen.name}
                         width={112} // matches w-28 (7rem)
@@ -507,9 +566,9 @@ export default function PcBuilderPage() {
                         <p className="truncate font-medium text-zinc-100">
                           {chosen.name}
                         </p>
-                        {chosen.subcategory?.name && (
+                        {getSubcategoryName(chosen) && (
                           <p className="mt-1 text-sm text-zinc-400">
-                            {chosen.subcategory.name}
+                            {getSubcategoryName(chosen)}
                           </p>
                         )}
                         <p className="mt-2 font-semibold text-zinc-200">
@@ -639,11 +698,14 @@ export default function PcBuilderPage() {
               <div className="grid gap-3 md:grid-cols-2">
                 {filteredBySearch.map((item) => (
                   <div
-                    key={item.id}
+                    key={item.id || item._id || item.slug}
                     className="overflow-hidden rounded-xl border border-zinc-700 bg-zinc-800/60"
                   >
                     <Image
-                      src={item.imageCover || fallbackImg(item.id || item.name)}
+                      src={
+                        item.imageCover ||
+                        fallbackImg(item.id || item._id || item.name)
+                      }
                       alt={item.name}
                       width={60} // ≈ w-15 (3.75rem)
                       height={60} // ≈ h-15 (3.75rem)
@@ -652,9 +714,9 @@ export default function PcBuilderPage() {
 
                     <div className="p-4">
                       <p className="font-medium text-zinc-100">{item.name}</p>
-                      {item.subcategory?.name && (
+                      {getSubcategoryName(item) && (
                         <p className="mt-1 text-sm text-zinc-400">
-                          {item.subcategory.name}
+                          {getSubcategoryName(item)}
                         </p>
                       )}
                       <p className="mt-2 font-semibold text-zinc-200">
