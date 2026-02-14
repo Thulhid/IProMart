@@ -77,9 +77,10 @@ export const addressSchema = yup.object({
 export const createProductSchema = yup.object().shape({
   name: yup
     .string()
+    .trim()
     .required("Product name is required")
-    .min(10, "Name must be at least 10 characters")
-    .max(40, "Name must be at most 40 characters"),
+    .min(3, "Name must be at least 3 characters")
+    .max(120, "Name must be at most 120 characters"),
   price: yup
     .number()
     .typeError("Price must be a number")
@@ -121,9 +122,10 @@ export const createProductSchema = yup.object().shape({
 export const updateProductSchema = yup.object().shape({
   name: yup
     .string()
+    .trim()
     .required("Product name is required")
-    .min(10, "Name must be at least 10 characters")
-    .max(40, "Name must be at most 40 characters"),
+    .min(3, "Name must be at least 3 characters")
+    .max(120, "Name must be at most 120 characters"),
   price: yup
     .number()
     .typeError("Price must be a number")

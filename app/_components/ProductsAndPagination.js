@@ -10,12 +10,17 @@ export default async function ProductsAndPagination({ searchParams }) {
   const sortBy = (await searchParams)?.sort;
   const page = Number((await searchParams)?.page || 1);
 
-  const sort =
-    (sortBy === "name-asc" && "name") ||
-    (sortBy === "name-desc" && "-name") ||
-    (sortBy === "finalPrice-asc" && "finalPrice") ||
-    (sortBy === "finalPrice-desc" && "-finalPrice") ||
-    undefined;
+  const sortMap = {
+    newest: "-createdAt",
+    "name-asc": "name",
+    "name-desc": "-name",
+    "finalPrice-asc": "finalPrice",
+    "finalPrice-desc": "-finalPrice",
+  };
+
+  // ✅ pass-through for values you already send correctly like:
+  // "-clicks", "clicks", "-unitsSold", "unitsSold"
+  const sort = sortBy ? sortMap[sortBy] ?? sortBy : undefined;
 
   const isUsed =
     used === "used" ? true : used === "brand-new" ? false : undefined;

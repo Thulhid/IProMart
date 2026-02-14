@@ -15,6 +15,57 @@ import { getProductById, updateProductById } from "@/app/_lib/product-service";
 import { updateProductSchema } from "@/app/_utils/validationSchema";
 import { getCategories, getCategoryById } from "@/app/_lib/category-service";
 
+function getEntityId(entity) {
+  if (!entity) return "";
+  if (typeof entity === "string") return entity;
+  return entity._id || entity.id || "";
+}
+
+function getCategoryRef(doc) {
+  return doc?.category ?? doc?.Category ?? "";
+}
+
+function getSubcategoryRef(doc) {
+  return doc?.subcategory ?? doc?.Subcategory ?? "";
+}
+
+function extractSubcategoriesFromCategoryRes(res) {
+  const payload =
+    res?.data?.data?.data ??
+    res?.data?.data ??
+    res?.data ??
+    res?.category ??
+    res ??
+    {};
+
+  const list =
+    payload?.subcategories ??
+    payload?.Subcategories ??
+    payload?.subcategory ??
+    payload?.Subcategory ??
+    [];
+
+  return Array.isArray(list) ? list : [];
+}
+
+function normalizeCategories(list = []) {
+  return list
+    .map((cat) => ({
+      id: getEntityId(cat),
+      name: cat?.name || "",
+    }))
+    .filter((cat) => cat.id);
+}
+
+function normalizeSubcategories(list = []) {
+  return list
+    .map((sub) => ({
+      id: getEntityId(sub),
+      name: sub?.name || "",
+    }))
+    .filter((sub) => sub.id);
+}
+
 export default function UpdateProductPage() {
   const [product, setProduct] = useState(null);
   const [categories, setCategories] = useState([]);
@@ -40,12 +91,14 @@ export default function UpdateProductPage() {
         const productRes = await getProductById(id);
         const resCategories = await getCategories();
         const doc = productRes.data.data;
+        const categoryList =
+          resCategories?.data?.data ?? resCategories?.data ?? [];
 
         setProduct(doc);
-        setCategories(resCategories.data.data || []);
+        setCategories(normalizeCategories(categoryList));
 
-        const productCatId = doc?.category?._id || doc?.category || "";
-        const productSubId = doc?.subcategory?._id || doc?.subcategory || "";
+        const productCatId = getEntityId(getCategoryRef(doc));
+        const productSubId = getEntityId(getSubcategoryRef(doc));
 
         reset({
           name: doc.name,
@@ -64,7 +117,9 @@ export default function UpdateProductPage() {
           setLoadingSubs(true);
           try {
             const cat = await getCategoryById(productCatId);
-            setSubOptions(cat?.data?.data?.subcategories || []);
+            setSubOptions(
+              normalizeSubcategories(extractSubcategoriesFromCategoryRes(cat)),
+            );
           } catch (e) {
             toast.error(e.message || "Failed to load subcategories");
           } finally {
@@ -87,7 +142,9 @@ export default function UpdateProductPage() {
     setLoadingSubs(true);
     try {
       const cat = await getCategoryById(newCatId);
-      setSubOptions(cat?.data?.data?.subcategories || []);
+      setSubOptions(
+        normalizeSubcategories(extractSubcategoriesFromCategoryRes(cat)),
+      );
     } catch (err) {
       toast.error(err.message || "Failed to load subcategories");
     } finally {
@@ -100,8 +157,8 @@ export default function UpdateProductPage() {
       const formData = new FormData();
       const changed = {};
 
-      const oldCatId = product?.category?._id || product?.category || "";
-      const oldSubId = product?.subcategory?._id || product?.subcategory || "";
+      const oldCatId = getEntityId(getCategoryRef(product));
+      const oldSubId = getEntityId(getSubcategoryRef(product));
 
       if (data.name !== product.name) {
         formData.append("name", data.name);
@@ -247,7 +304,7 @@ export default function UpdateProductPage() {
               >
                 <option value="">Select a category</option>
                 {categories.map((cat) => (
-                  <option key={cat._id} value={cat._id}>
+                  <option key={cat.id} value={cat.id}>
                     {cat.name}
                   </option>
                 ))}
@@ -267,7 +324,7 @@ export default function UpdateProductPage() {
                   {loadingSubs ? "Loading..." : "Select a subcategory"}
                 </option>
                 {subOptions.map((sub) => (
-                  <option key={sub._id} value={sub._id}>
+                  <option key={sub.id} value={sub.id}>
                     {sub.name}
                   </option>
                 ))}
