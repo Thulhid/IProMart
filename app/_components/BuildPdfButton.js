@@ -20,6 +20,18 @@ export default function BuildPdfButton({
 }) {
   const [downloading, setDownloading] = useState(false);
 
+  function normalizeRows(rawParts) {
+    return rawParts.flatMap(({ label, item, items }) => {
+      const list = Array.isArray(items) ? items : item ? [item] : [];
+      return list.map((partItem, index) => ({
+        label:
+          list.length > 1 ? `${label} ${index + 1}/${list.length}` : String(label),
+        name: partItem?.name || "-",
+        price: partItem?.finalPrice ?? partItem?.price ?? 0,
+      }));
+    });
+  }
+
   async function handleDownload() {
     try {
       setDownloading(true);
@@ -209,12 +221,9 @@ export default function BuildPdfButton({
       }
 
       // Render table
+      const rows = normalizeRows(parts);
       drawHeaderRow();
-      parts.forEach(({ label, item }) => {
-        const name = item?.name || "-";
-        const price = item?.finalPrice ?? item?.price ?? 0;
-        drawDataRow({ label, name, price });
-      });
+      rows.forEach(drawDataRow);
       drawTotalRow(total);
 
       // Save

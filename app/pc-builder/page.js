@@ -37,8 +37,6 @@ const CATEGORY_MATCH = {
   cooler: [
     "cooler",
     "coolers",
-    "cpu cooler",
-    "cpu coolers",
     "air cooler",
     "liquid cooler",
     "liquid coolers",
@@ -105,7 +103,8 @@ function normalizeBuilderProduct(product) {
     description: product?.description || "",
     imageCover: product?.imageCover || fallbackImg(id || product?.name),
     subcategory: {
-      id: getEntityId(product?.subcategory) || getEntityId(product?.Subcategory),
+      id:
+        getEntityId(product?.subcategory) || getEntityId(product?.Subcategory),
       name: getSubcategoryName(product),
     },
     category: {
@@ -147,6 +146,12 @@ const PART_STEPS = [
   { key: "cooler", label: "CPU Cooler" },
 ];
 
+const MULTI_SELECT_LIMITS = {
+  ram: 2,
+  gpu: 2,
+  storage: 2,
+};
+
 // Fallback image (only used if a product has no imageCover)
 const fallbackImg = (seed) =>
   `https://picsum.photos/seed/${encodeURIComponent(seed)}/640/400`;
@@ -160,10 +165,77 @@ function isPrebuiltCategoryName(name) {
   return hasPrebuilt && isDesktopish;
 }
 
+function getPartLimit(partKey) {
+  return MULTI_SELECT_LIMITS[partKey] || 1;
+}
+
+function isMultiSelectPart(partKey) {
+  return getPartLimit(partKey) > 1;
+}
+
+function getSelectionItems(selection, partKey) {
+  const value = selection?.[partKey];
+  if (!value) return [];
+  return Array.isArray(value) ? value.filter(Boolean) : [value];
+}
+
+function getPartPriceTotal(items = []) {
+  return items.reduce(
+    (sum, item) => sum + (item?.finalPrice ?? item?.price ?? 0),
+    0,
+  );
+}
+
+function getComparableItemId(item) {
+  return String(getProductId(item) || item?.slug || item?.name || "");
+}
+
+function isSameProduct(left, right) {
+  const leftId = getComparableItemId(left);
+  const rightId = getComparableItemId(right);
+  return Boolean(leftId) && Boolean(rightId) && leftId === rightId;
+}
+
+function normalizeSelectedState(rawSelected) {
+  if (!rawSelected || typeof rawSelected !== "object") return {};
+
+  const normalized = {};
+  for (const { key } of PART_STEPS) {
+    const value = rawSelected[key];
+    if (!value) continue;
+
+    if (isMultiSelectPart(key)) {
+      const list = Array.isArray(value)
+        ? value.filter(Boolean).slice(0, getPartLimit(key))
+        : [value];
+      if (list.length) normalized[key] = list;
+      continue;
+    }
+
+    normalized[key] = Array.isArray(value) ? value[0] : value;
+  }
+  return normalized;
+}
+
+function matchesBuilderCategory(partKey, product) {
+  const cat = normalizeLabel(getCategoryName(product));
+  if (!cat) return false;
+
+  const wantNames = (CATEGORY_MATCH[partKey] || []).map((s) =>
+    normalizeLabel(s),
+  );
+  return wantNames.some((want) => {
+    if (cat === want) return true;
+    // Avoid overlaps like "cpu" matching "cpu coolers".
+    // Keep partial matching only for longer aliases.
+    return want.length >= 4 && cat.includes(want);
+  });
+}
+
 export default function PcBuilderPage() {
   const [pickerOpenFor, setPickerOpenFor] = useState(null);
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState({}); // { cpu: product, ... }
+  const [selected, setSelected] = useState({}); // single parts => product, multi parts => product[]
 
   // Picker data state
   const [options, setOptions] = useState([]); // accumulated filtered products for the current part
@@ -181,7 +253,10 @@ export default function PcBuilderPage() {
 
   // ✅ moved INSIDE component so `selected` exists
   const allSelected = useMemo(
-    () => PART_STEPS.every(({ key }) => Boolean(selected[key])),
+    () =>
+      PART_STEPS.every(
+        ({ key }) => getSelectionItems(selected, key).length > 0,
+      ),
     [selected],
   );
 
@@ -191,7 +266,7 @@ export default function PcBuilderPage() {
       const raw = localStorage.getItem("pc_builder_v1");
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === "object") setSelected(parsed);
+        setSelected(normalizeSelectedState(parsed));
       }
     } catch {}
   }, []);
@@ -236,14 +311,24 @@ export default function PcBuilderPage() {
 
   const subtotal = useMemo(
     () =>
-      Object.values(selected).reduce(
-        (sum, item) => sum + (item?.finalPrice ?? item?.price ?? 0),
+      PART_STEPS.reduce(
+        (sum, { key }) =>
+          sum + getPartPriceTotal(getSelectionItems(selected, key)),
         0,
       ),
     [selected],
   );
 
-  const anySelected = Object.keys(selected).length > 0;
+  const anySelected = PART_STEPS.some(
+    ({ key }) => getSelectionItems(selected, key).length > 0,
+  );
+
+  const pickerSelectedItems = useMemo(
+    () => getSelectionItems(selected, pickerOpenFor),
+    [selected, pickerOpenFor],
+  );
+  const pickerIsMulti = isMultiSelectPart(pickerOpenFor);
+  const pickerLimit = getPartLimit(pickerOpenFor);
 
   const filteredBySearch = useMemo(() => {
     if (!search.trim()) return options;
@@ -276,6 +361,31 @@ export default function PcBuilderPage() {
 
   function selectPart(partKey, product) {
     setSelected((s) => {
+      if (isMultiSelectPart(partKey)) {
+        const currentItems = getSelectionItems(s, partKey);
+        const isAlreadySelected = currentItems.some((item) =>
+          isSameProduct(item, product),
+        );
+
+        if (isAlreadySelected) {
+          const remaining = currentItems.filter(
+            (item) => !isSameProduct(item, product),
+          );
+          const next = { ...s };
+          if (remaining.length) next[partKey] = remaining;
+          else delete next[partKey];
+          return next;
+        }
+
+        const partLimit = getPartLimit(partKey);
+        if (currentItems.length >= partLimit) {
+          toast(`You can select up to ${partLimit} item(s) for this part.`);
+          return s;
+        }
+
+        return { ...s, [partKey]: [...currentItems, product] };
+      }
+
       const next = { ...s, [partKey]: product };
 
       // If picking a CPU and an incompatible motherboard is already selected → clear it
@@ -307,7 +417,7 @@ export default function PcBuilderPage() {
       return next;
     });
 
-    closePicker();
+    if (!isMultiSelectPart(partKey)) closePicker();
   }
 
   function clearPart(partKey) {
@@ -315,6 +425,19 @@ export default function PcBuilderPage() {
       const copy = { ...s };
       delete copy[partKey];
       return copy;
+    });
+  }
+
+  function removePartItem(partKey, product) {
+    setSelected((s) => {
+      const currentItems = getSelectionItems(s, partKey);
+      const remaining = currentItems.filter(
+        (item) => !isSameProduct(item, product),
+      );
+      const next = { ...s };
+      if (remaining.length) next[partKey] = remaining;
+      else delete next[partKey];
+      return next;
     });
   }
 
@@ -332,9 +455,6 @@ export default function PcBuilderPage() {
     if (!partKey || isLoading || !hasMore) return;
     setIsLoading(true);
     try {
-      const wantNames = (CATEGORY_MATCH[partKey] || []).map((s) =>
-        normalizeLabel(s),
-      );
       let localPage = isFirst ? 1 : page;
       let collected = isFirst ? [] : [...options];
       let loop = 0;
@@ -346,13 +466,9 @@ export default function PcBuilderPage() {
         const results = Number(res?.results ?? docs.length);
 
         // 1) Filter by category name (case-insensitive)
-        const byCategory = docs.filter((p) => {
-          const cat = normalizeLabel(getCategoryName(p));
-          if (!cat) return false;
-          return wantNames.some(
-            (want) => cat === want || cat.includes(want) || want.includes(cat),
-          );
-        });
+        const byCategory = docs.filter((p) =>
+          matchesBuilderCategory(partKey, p),
+        );
 
         // 2) Normalize product shape (include fields used by cart/guest)
         let mapped = byCategory.map(normalizeBuilderProduct);
@@ -409,7 +525,9 @@ export default function PcBuilderPage() {
 
     try {
       // Build a list of items to add (each +1)
-      const items = PART_STEPS.map(({ key }) => selected[key]).filter(Boolean);
+      const items = PART_STEPS.flatMap(({ key }) =>
+        getSelectionItems(selected, key),
+      );
 
       let loggedIn = false;
       try {
@@ -514,7 +632,10 @@ export default function PcBuilderPage() {
         <ContainerBox isCentered={true}>
           <div className="grid gap-4 md:grid-cols-2">
             {PART_STEPS.map(({ key, label }) => {
-              const chosen = selected[key];
+              const chosenItems = getSelectionItems(selected, key);
+              const hasChosen = chosenItems.length > 0;
+              const isMultiSelect = isMultiSelectPart(key);
+              const partLimit = getPartLimit(key);
               return (
                 <div
                   key={key}
@@ -529,13 +650,13 @@ export default function PcBuilderPage() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      {chosen && (
+                      {hasChosen && (
                         <Button
                           buttonType="button"
                           variant="secondary"
                           onClick={() => clearPart(key)}
                         >
-                          Remove
+                          {isMultiSelect ? "Remove all" : "Remove"}
                         </Button>
                       )}
                       <Button
@@ -543,43 +664,72 @@ export default function PcBuilderPage() {
                         variant="primary"
                         onClick={() => openPicker(key)}
                       >
-                        {chosen ? "Change" : "Choose"}
+                        {isMultiSelect
+                          ? `Choose (${chosenItems.length}/${partLimit})`
+                          : hasChosen
+                            ? "Change"
+                            : "Choose"}
                       </Button>
                     </div>
                   </div>
 
                   {/* Selection summary with thumbnail */}
-                  {chosen ? (
-                    <div className="flex gap-4 rounded-xl border border-zinc-700 bg-zinc-800/70 p-4">
-                      <Image
-                        src={
-                          chosen.imageCover ||
-                          fallbackImg(chosen.id || chosen._id || chosen.name)
-                        }
-                        alt={chosen.name}
-                        width={112} // matches w-28 (7rem)
-                        height={80} // matches h-20 (5rem)
-                        className="h-20 w-28 rounded-lg object-cover"
-                      />
+                  {hasChosen ? (
+                    <div className="space-y-3">
+                      {chosenItems.map((item) => (
+                        <div
+                          key={getComparableItemId(item)}
+                          className="flex gap-4 rounded-xl border border-zinc-700 bg-zinc-800/70 p-4"
+                        >
+                          <Image
+                            src={
+                              item.imageCover ||
+                              fallbackImg(item.id || item._id || item.name)
+                            }
+                            alt={item.name}
+                            width={112} // matches w-28 (7rem)
+                            height={80} // matches h-20 (5rem)
+                            className="h-20 w-28 rounded-lg object-cover"
+                          />
 
-                      <div className="min-w-0">
-                        <p className="truncate font-medium text-zinc-100">
-                          {chosen.name}
-                        </p>
-                        {getSubcategoryName(chosen) && (
-                          <p className="mt-1 text-sm text-zinc-400">
-                            {getSubcategoryName(chosen)}
-                          </p>
-                        )}
-                        <p className="mt-2 font-semibold text-zinc-200">
-                          {formatCurrency(
-                            chosen.finalPrice ?? chosen.price ?? 0,
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate font-medium text-zinc-100">
+                              {item.name}
+                            </p>
+                            {getSubcategoryName(item) && (
+                              <p className="mt-1 text-sm text-zinc-400">
+                                {getSubcategoryName(item)}
+                              </p>
+                            )}
+                            <p className="mt-2 font-semibold text-zinc-200">
+                              {formatCurrency(
+                                item.finalPrice ?? item.price ?? 0,
+                              )}
+                            </p>
+                          </div>
+
+                          {isMultiSelect && (
+                            <button
+                              type="button"
+                              className="cursor-pointer text-sm text-zinc-300"
+                              onClick={() => removePartItem(key, item)}
+                            >
+                              Remove
+                            </button>
                           )}
+                        </div>
+                      ))}
+
+                      {isMultiSelect && (
+                        <p className="text-xs text-zinc-400">
+                          {chosenItems.length}/{partLimit} selected
                         </p>
-                      </div>
+                      )}
                     </div>
                   ) : (
-                    <p className="text-zinc-400">No {label} selected.</p>
+                    <p className="text-zinc-400">
+                      No {label} selected{isMultiSelect ? " (up to 2)." : "."}
+                    </p>
                   )}
                 </div>
               );
@@ -597,7 +747,8 @@ export default function PcBuilderPage() {
 
               <div className="space-y-2">
                 {PART_STEPS.map(({ key, label }) => {
-                  const item = selected[key];
+                  const items = getSelectionItems(selected, key);
+                  const partTotal = getPartPriceTotal(items);
                   return (
                     <div
                       key={key}
@@ -605,8 +756,10 @@ export default function PcBuilderPage() {
                     >
                       <span className="text-zinc-400">{label}</span>
                       <span className="text-zinc-200">
-                        {item
-                          ? formatCurrency(item.finalPrice ?? item.price ?? 0)
+                        {items.length
+                          ? `${formatCurrency(partTotal)}${
+                              items.length > 1 ? ` (${items.length} items)` : ""
+                            }`
                           : "—"}
                       </span>
                     </div>
@@ -636,8 +789,8 @@ export default function PcBuilderPage() {
                   total={subtotal}
                   parts={PART_STEPS.map((p) => ({
                     label: p.label,
-                    item: selected[p.key],
-                  })).filter((x) => x.item)}
+                    items: getSelectionItems(selected, p.key),
+                  })).filter((x) => x.items.length)}
                 />
 
                 {/* ✅ Add-to-cart for the whole build (increments existing qty) */}
@@ -675,6 +828,11 @@ export default function PcBuilderPage() {
                   Choose{" "}
                   {PART_STEPS.find((s) => s.key === pickerOpenFor)?.label}
                 </h3>
+                {pickerIsMulti && (
+                  <p className="text-sm text-zinc-400">
+                    {pickerSelectedItems.length}/{pickerLimit} selected
+                  </p>
+                )}
                 <Button
                   buttonType="button"
                   variant="secondary"
@@ -696,44 +854,63 @@ export default function PcBuilderPage() {
             {/* Scrollable list */}
             <div className="flex-1 overflow-auto p-4">
               <div className="grid gap-3 md:grid-cols-2">
-                {filteredBySearch.map((item) => (
-                  <div
-                    key={item.id || item._id || item.slug}
-                    className="overflow-hidden rounded-xl border border-zinc-700 bg-zinc-800/60"
-                  >
-                    <Image
-                      src={
-                        item.imageCover ||
-                        fallbackImg(item.id || item._id || item.name)
-                      }
-                      alt={item.name}
-                      width={60} // ≈ w-15 (3.75rem)
-                      height={60} // ≈ h-15 (3.75rem)
-                      className="m-2 h-15 w-15 object-cover"
-                    />
+                {filteredBySearch.map((item) => {
+                  const isSelectedInPicker = pickerSelectedItems.some(
+                    (picked) => isSameProduct(picked, item),
+                  );
+                  const canSelectMore =
+                    !pickerIsMulti ||
+                    isSelectedInPicker ||
+                    pickerSelectedItems.length < pickerLimit;
 
-                    <div className="p-4">
-                      <p className="font-medium text-zinc-100">{item.name}</p>
-                      {getSubcategoryName(item) && (
-                        <p className="mt-1 text-sm text-zinc-400">
-                          {getSubcategoryName(item)}
+                  return (
+                    <div
+                      key={item.id || item._id || item.slug}
+                      className="overflow-hidden rounded-xl border border-zinc-700 bg-zinc-800/60"
+                    >
+                      <Image
+                        src={
+                          item.imageCover ||
+                          fallbackImg(item.id || item._id || item.name)
+                        }
+                        alt={item.name}
+                        width={60} // ≈ w-15 (3.75rem)
+                        height={60} // ≈ h-15 (3.75rem)
+                        className="m-2 h-15 w-15 object-cover"
+                      />
+
+                      <div className="p-4">
+                        <p className="font-medium text-zinc-100">{item.name}</p>
+                        {getSubcategoryName(item) && (
+                          <p className="mt-1 text-sm text-zinc-400">
+                            {getSubcategoryName(item)}
+                          </p>
+                        )}
+                        <p className="mt-2 font-semibold text-zinc-200">
+                          {formatCurrency(item.finalPrice ?? item.price ?? 0)}
                         </p>
-                      )}
-                      <p className="mt-2 font-semibold text-zinc-200">
-                        {formatCurrency(item.finalPrice ?? item.price ?? 0)}
-                      </p>
-                      <div className="mt-3 flex justify-end">
-                        <Button
-                          buttonType="button"
-                          variant="primary"
-                          onClick={() => selectPart(pickerOpenFor, item)}
-                        >
-                          Select
-                        </Button>
+                        <div className="mt-3 flex justify-end">
+                          <Button
+                            buttonType="button"
+                            variant={
+                              isSelectedInPicker ? "secondary" : "primary"
+                            }
+                            onClick={() => selectPart(pickerOpenFor, item)}
+                            disabled={!isSelectedInPicker && !canSelectMore}
+                          >
+                            {pickerIsMulti
+                              ? isSelectedInPicker
+                                ? "Remove"
+                                : canSelectMore
+                                  ? "Select"
+                                  : "Limit reached"
+                              : "Select"}
+                          </Button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {!isLoading && filteredBySearch.length === 0 && (
                   <p className="col-span-full py-8 text-center text-zinc-400">
