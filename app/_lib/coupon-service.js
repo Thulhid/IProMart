@@ -1,5 +1,4 @@
 import axios from "axios";
-import toast from "react-hot-toast";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -46,7 +45,7 @@ export async function getCoupons() {
       withCredentials: true,
     });
   } catch (err) {
-    toast.error(err.message);
+    apiError(err);
   }
 }
 
@@ -56,7 +55,7 @@ export async function updateCoupon(id, payload) {
       withCredentials: true,
     });
   } catch (err) {
-    toast.error(err.message);
+    apiError(err);
   }
 }
 
@@ -67,7 +66,7 @@ export async function createCoupon(payload) {
       withCredentials: true,
     });
   } catch (err) {
-    toast.error(err.message);
+    apiError(err);
   }
 }
 
@@ -77,6 +76,6 @@ export async function deleteCoupon(id) {
       withCredentials: true,
     });
   } catch (err) {
-    toast.error(err.message);
+    apiError(err);
   }
 }

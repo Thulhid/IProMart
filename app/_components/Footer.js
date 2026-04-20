@@ -43,7 +43,7 @@ export default function Footer() {
               width={100}
             />
             <address className="text-xs text-zinc-300 not-italic md:text-sm">
-              No. 714, KandyRoad, Thorana Junction, Kelaniya, Sri Lanka
+              25/A Ranathunga Rd, Gampaha
             </address>
           </div>
 
@@ -84,7 +84,7 @@ export default function Footer() {
           </div>
 
           <p className="text-xs text-zinc-400 md:text-sm">
-            &#169; I Pro Mart {new Date().getFullYear()}
+            &#169; New Wintec {new Date().getFullYear()}
           </p>
           <p className="text-xs text-zinc-400 md:text-sm">
             Designed & Development by Alpha Media
